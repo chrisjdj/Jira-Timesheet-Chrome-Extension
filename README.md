@@ -54,6 +54,8 @@ A Chrome Extension that displays your logged work hours in Jira Cloud with custo
    - Per-day breakdown showing when work was logged
    - Click any issue to open it in Jira
 
+<img width="1769" height="794" alt="extn" src="https://github.com/user-attachments/assets/d320a9e0-7e84-4f99-b147-1465f76d8d66" />
+
 ### Tab Mode
 
 Open the extension in a full browser tab for more space:
@@ -63,6 +65,8 @@ Open the extension in a full browser tab for more space:
    - Windows/Linux: `Ctrl+Shift+J`
    - Mac: `Cmd+Shift+J`
 3. The extension opens in a new tab with full-screen layout
+
+<img width="1269" height="797" alt="new tab" src="https://github.com/user-attachments/assets/6bafac5e-fd47-478d-8f07-1c31b3557064" />
 
 ## File Structure
 
@@ -169,3 +173,4 @@ For issues or questions:
 ---
 
 **Built with ❤️ for Jira users who want better timesheet visibility**
+
