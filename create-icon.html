@@ -1,0 +1,112 @@
+<!DOCTYPE html>
+<html>
+<head>
+  <title>Icon Generator</title>
+  <style>
+    body {
+      font-family: Arial, sans-serif;
+      display: flex;
+      flex-direction: column;
+      align-items: center;
+      padding: 40px;
+      background: #f4f5f7;
+    }
+    canvas {
+      border: 2px solid #ddd;
+      margin: 20px 0;
+    }
+    button {
+      padding: 12px 24px;
+      background: #0052cc;
+      color: white;
+      border: none;
+      border-radius: 4px;
+      font-size: 16px;
+      cursor: pointer;
+    }
+    button:hover {
+      background: #0065ff;
+    }
+    .instructions {
+      max-width: 600px;
+      background: white;
+      padding: 20px;
+      border-radius: 8px;
+      margin-top: 20px;
+    }
+  </style>
+</head>
+<body>
+  <h1>Jira Timesheet Icon Generator</h1>
+  <canvas id="iconCanvas" width="128" height="128"></canvas>
+  <button onclick="downloadIcon()">Download Icon</button>
+  
+  <div class="instructions">
+    <h3>Instructions:</h3>
+    <ol>
+      <li>Click "Download Icon" button above</li>
+      <li>Save the file as <code>icon.png</code></li>
+      <li>Place it in the <code>icons/</code> folder</li>
+      <li>Load the extension in Chrome</li>
+    </ol>
+  </div>
+
+  <script>
+    // Draw icon on canvas
+    const canvas = document.getElementById('iconCanvas');
+    const ctx = canvas.getContext('2d');
+    
+    // Background gradient
+    const gradient = ctx.createLinearGradient(0, 0, 128, 128);
+    gradient.addColorStop(0, '#0052cc');
+    gradient.addColorStop(1, '#0065ff');
+    ctx.fillStyle = gradient;
+    ctx.fillRect(0, 0, 128, 128);
+    
+    // Draw clock icon
+    ctx.strokeStyle = 'white';
+    ctx.fillStyle = 'white';
+    ctx.lineWidth = 4;
+    
+    // Clock circle
+    ctx.beginPath();
+    ctx.arc(64, 64, 35, 0, 2 * Math.PI);
+    ctx.stroke();
+    
+    // Clock hands
+    ctx.beginPath();
+    ctx.moveTo(64, 64);
+    ctx.lineTo(64, 40);
+    ctx.stroke();
+    
+    ctx.beginPath();
+    ctx.moveTo(64, 64);
+    ctx.lineTo(80, 64);
+    ctx.stroke();
+    
+    // Center dot
+    ctx.beginPath();
+    ctx.arc(64, 64, 3, 0, 2 * Math.PI);
+    ctx.fill();
+    
+    // Text
+    ctx.font = 'bold 16px Arial';
+    ctx.textAlign = 'center';
+    // ctx.fillText('JIRA', 64, 110);
+    
+    function downloadIcon() {
+      canvas.toBlob(function(blob) {
+        const url = URL.createObjectURL(blob);
+        const a = document.createElement('a');
+        a.href = url;
+        a.download = 'icon.png';
+        document.body.appendChild(a);
+        a.click();
+        document.body.removeChild(a);
+        URL.revokeObjectURL(url);
+        alert('Icon downloaded! Save it as icon.png in the icons/ folder');
+      });
+    }
+  </script>
+</body>
+</html>
