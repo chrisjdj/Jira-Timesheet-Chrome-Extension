@@ -164,7 +164,9 @@ After making changes, click the refresh icon on the extension card in `chrome://
 
 ## License
 
-This project is licensed under the **Creative Commons Attribution-NonCommercial-ShareAlike 4.0 International License**. See the [LICENSE](LICENSE) file for details.
+This project is licensed under the **Creative Commons Attribution-NonCommercial-ShareAlike 4.0 International License**.
+
+You are free to use, modify, and share this project for **non-commercial purposes** with appropriate credit. Commercial use is not permitted. See the [LICENSE](./LICENSE) file for details.
 
 
 ## Support
@@ -173,3 +175,4 @@ For issues or questions:
 1. Check the Troubleshooting section above
 2. Review Chrome DevTools console for errors
 3. Verify your Jira permissions allow worklog access
+
