@@ -15,10 +15,11 @@ All requirements from the specification have been implemented and the extension 
 ### Core Files (Required)
 1. ✅ `manifest.json` - Extension configuration (Manifest V3)
 2. ✅ `popup.html` - User interface structure
-3. ✅ `popup.js` - Main application logic and API integration
-4. ✅ `styles.css` - Complete styling with Jira theme
-5. ✅ `background.js` - Service worker for background tasks
-6. ✅ `icons/icon.png` - Extension icon (included)
+3. ✅ `popup.js` - Main logic and UI controllers
+4. ✅ `jiraAPI.js` - Jira REST API service layer
+5. ✅ `styles.css` - Complete styling with Light/Dark mode
+6. ✅ `background.js` - Service worker for background tasks
+7. ✅ `icons/icon.png` - Extension icon (included)
 
 ### Documentation Files
 1. ✅ `README.md` - Complete usage and installation guide
@@ -41,9 +42,19 @@ All requirements from the specification have been implemented and the extension 
 - ✅ Total time logged (formatted as "Xh Ym")
 - ✅ Time per issue with issue key and summary
 - ✅ Per-day breakdown with date grouping
-- ✅ Clickable issue links to open in Jira
+- ✅ Dashboard sorted by chronological order with start times
+- ✅ Clickable issue links to open in Jira (supports middle-click for new tab)
 - ✅ Responsive table with scrolling
 - ✅ "No results" state handling
+
+### Data Entry & UI Polish
+- ✅ Custom time selection UI (Hours, Minutes, AM/PM) in the "Enter Time" tab
+- ✅ **Work Timers**: Start/stop timers for issues with custom time picking
+- ✅ **Assigned Tasks**: View all tasks assigned to you with status filtering
+- ✅ **Theme Toggle**: Switch between Light and Dark modes
+- ✅ Full-width, 3-row textarea for work descriptions/comments
+- ✅ Active tab preservation (retains view across reloads)
+- ✅ Formatted dates (`dd/mm/yyyy`) and cleaned up UI
 
 ### API Integration
 - ✅ Jira REST API v3 (`/rest/api/3/search`)
@@ -106,12 +117,13 @@ jira-timesheet-dashboard/
 │
 ├── manifest.json              # Extension configuration
 ├── popup.html                 # UI structure
-├── popup.js                   # Main logic (500+ lines)
-├── styles.css                 # Complete styling (400+ lines)
+├── popup.js                   # Main logic (1,500+ lines)
+├── jiraAPI.js                 # API service (300+ lines)
+├── styles.css                 # Complete styling (700+ lines)
 ├── background.js              # Service worker
 │
 ├── icons/
-│   └── icon.png              # ⚠️ USER MUST ADD
+│   └── icon.png              # Extension icon
 │
 ├── README.md                  # Main documentation
 ├── INSTALLATION.md            # Installation guide
@@ -120,6 +132,8 @@ jira-timesheet-dashboard/
 ├── CHANGELOG.md               # Version history
 ├── ICON_INSTRUCTIONS.md       # Icon creation guide
 ├── create-icon.html           # Icon generator tool
+├── TAB_MODE_GUIDE.md          # Tab mode instructions
+├── GET_STARTED.md             # Quick start guide
 └── PROJECT_SUMMARY.md         # This file
 ```
 
@@ -236,15 +250,16 @@ The code is structured to easily support:
 - ✅ HTML escaping prevents XSS
 - ✅ Minimal permissions requested
 - ✅ Only accesses Jira domains
+- ✅ **License Compliance**: CC BY-NC-SA 4.0 (Non-Commercial)
 
 ## Code Statistics
 
-- **Total Files:** 13 (8 code + 5 documentation)
-- **Lines of Code:** ~1,500+
-- **JavaScript:** ~500 lines (popup.js)
-- **CSS:** ~400 lines (styles.css)
+- **Total Files:** 17 (9 code + 8 documentation)
+- **Lines of Code:** ~2,500+
+- **JavaScript:** ~1,800+ lines (popup.js + jiraAPI.js)
+- **CSS:** ~700+ lines (styles.css)
 - **HTML:** ~50 lines (popup.html)
-- **Documentation:** ~2,000 lines
+- **Documentation:** ~2,000+ lines
 
 ## Compliance
 
@@ -265,4 +280,4 @@ The Jira Timesheet Dashboard Chrome Extension is **complete and production-ready
 **Documentation:** ✅ COMPREHENSIVE  
 **Code Quality:** ✅ PRODUCTION-READY
 
-**Last Updated:** February 17, 2026
+**Last Updated:** March 9, 2026

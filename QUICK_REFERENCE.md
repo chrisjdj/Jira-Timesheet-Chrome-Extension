@@ -19,6 +19,15 @@
 4. Choose end date
 5. Click "Load"
 
+### Use Work Timers
+1. Click the **Timers** tab
+2. Enter an issue key and click **+ Add Timer**
+3. Click **Start** to track time
+
+### View Assigned Tasks
+1. Click the **Assigned Tasks** tab
+2. Use the search bar or status filter to find tasks
+
 ## Keyboard Shortcuts
 
 - `Tab` - Navigate between fields
@@ -89,8 +98,9 @@ Examples:
 jira-timesheet-dashboard/
 ├── manifest.json       # Extension config
 ├── popup.html         # UI structure
-├── popup.js           # Main logic
-├── styles.css         # Styling
+├── popup.js           # UI logic
+├── jiraAPI.js         # API service layer
+├── styles.css         # Styling (Dark mode support)
 ├── background.js      # Service worker
 └── icons/icon.png     # Extension icon
 ```
@@ -169,7 +179,7 @@ worklogDate >= START_DATE AND worklogDate <= END_DATE AND worklogAuthor = curren
 
 ## Version Info
 
-**Current Version:** 1.1.0  
+**Current Version:** 1.2.0  
 **Manifest Version:** 3  
 **Minimum Chrome:** 88+
 

@@ -67,9 +67,32 @@ All notable changes to the Jira Timesheet Dashboard extension will be documented
 
 ---
 
+### [1.2.0] - March 9, 2026
+
+#### New Features & Enhancements
+- ✅ **Work Timers**: Added a dedicated tab to start, stop, and manage multiple timers for Jira issues.
+- ✅ **Assigned Tasks View**: New tab to view all tasks assigned to you with status filtering and search.
+- ✅ **Theme Support**: Added Light and Dark mode support with a theme toggle.
+- ✅ **Time Selection UI**: Added a custom time picker (hours, minutes, AM/PM) in the "Enter Time" tab.
+- ✅ **Dashboard Improvements**: Issues now sort in ascending order of time, displaying start times.
+- ✅ **Tab State Preservation**: Extension remembers your active tab across refreshes.
+- ✅ **Better Input Fields**: Comment field spans full-width with 3 rows.
+- ✅ **Updated Formatting**: Assigned Tasks now display dates in `dd/mm/yyyy` format.
+
+#### Technical
+- Refactored API logic into `jiraAPI.js` service layer.
+- Implemented timer state persistence in `chrome.storage`.
+- Added CSS variables for theme support and polished UI.
+
+#### Bug Fixes
+- ✅ **Task Links**: Middle-clicking an issue number correctly opens it in a new tab.
+- ✅ **UI Fixes**: Corrected display of Assigned Tasks and removed unnecessary alerts in standalone tabs.
+
+---
+
 ## Future Releases
 
-### [1.2.0] - Planned
+### [1.3.0] - Planned
 
 #### Features
 - [ ] CSV export functionality
@@ -83,10 +106,7 @@ All notable changes to the Jira Timesheet Dashboard extension will be documented
 - [ ] Better error messages with recovery suggestions
 - [ ] Toggle between summary and per-day views
 
-#### Bug Fixes
-- [ ] TBD based on user feedback
-
-### [1.3.0] - Planned
+### [1.4.0] - Planned
 
 #### Features
 - [ ] CSV export functionality
@@ -109,6 +129,7 @@ All notable changes to the Jira Timesheet Dashboard extension will be documented
 
 | Version | Release Date | Key Features |
 |---------|--------------|--------------|
+| 1.2.0   | Feb 26, 2026 | Time selection UI, Tab state preservation, Dashboard sorting, UI fixes |
 | 1.1.0   | Feb 17, 2026 | Tab mode, keyboard shortcuts, clickable issues, per-day breakdown |
 | 1.0.0   | Jan 2026     | Initial release with core functionality |
 

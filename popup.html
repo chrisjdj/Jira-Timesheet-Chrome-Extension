@@ -10,66 +10,221 @@
   <div class="container">
     <header>
       <h1>Jira Timesheet</h1>
-      <button id="openInTabBtn" class="open-tab-btn" title="Open in new tab">⇱</button>
+      <div class="header-actions">
+        <button id="refreshBtn" class="refresh-btn" title="Refresh data">⟳</button>
+        <button id="themeToggleBtn" class="theme-btn" title="Toggle dark theme">🌓</button>
+        <button id="openInTabBtn" class="open-tab-btn" title="Open in new tab">⇱</button>
+      </div>
     </header>
 
-    <div class="filter-section">
-      <div class="filter-group">
-        <label for="dateRange">Date Range:</label>
-        <select id="dateRange">
-          <option value="today">Today</option>
-          <option value="week">This Week</option>
-          <option value="month">This Month</option>
-          <option value="custom">Custom Range</option>
-        </select>
-      </div>
 
-      <div id="customDateInputs" class="custom-date-inputs hidden">
-        <div class="date-input-group">
-          <label for="startDate">Start Date:</label>
-          <input type="date" id="startDate">
+
+    <div class="tabs">
+      <button class="tab-btn active" data-tab="dashboard">Dashboard</button>
+      <button class="tab-btn" data-tab="assigned">Assigned Tasks</button>
+      <button class="tab-btn" data-tab="timers">Timers</button>
+      <button class="tab-btn" data-tab="enterTime">Enter Time</button>
+    </div>
+
+    <div id="dashboard" class="tab-content active">
+      <div class="filter-section">
+        <div class="filter-group">
+          <label for="dateRange">Date Range:</label>
+          <select id="dateRange">
+            <option value="today">Today</option>
+            <option value="yesterday">Yesterday</option>
+            <option value="week">This Week</option>
+            <option value="last_week">Last Week</option>
+            <option value="month">This Month</option>
+            <option value="custom">Custom Range</option>
+          </select>
         </div>
-        <div class="date-input-group">
-          <label for="endDate">End Date:</label>
-          <input type="date" id="endDate">
+
+        <div id="customDateInputs" class="custom-date-inputs hidden">
+          <div class="date-input-group">
+            <label for="startDate">Start Date:</label>
+            <input type="date" id="startDate">
+          </div>
+          <div class="date-input-group">
+            <label for="endDate">End Date:</label>
+            <input type="date" id="endDate">
+          </div>
+        </div>
+
+        <button id="loadBtn" class="load-btn">Load</button>
+      </div>
+
+      <div id="loadingIndicator" class="loading-indicator hidden">
+        <div class="spinner"></div>
+        <p>Loading worklogs...</p>
+      </div>
+
+      <div id="errorMessage" class="error-message hidden"></div>
+
+      <div id="resultsSection" class="results-section hidden">
+        <div class="summary">
+          <h2>Total Time: <span id="totalTime">0h 0m</span></h2>
+        </div>
+
+        <div class="table-container">
+          <table id="worklogTable">
+            <thead>
+              <tr>
+                <th>Issue Key</th>
+                <th>Issue Summary</th>
+                <th>Start Time</th>
+                <th>End Time</th>
+                <th>Time Spent</th>
+              </tr>
+            </thead>
+            <tbody id="worklogTableBody">
+            </tbody>
+          </table>
+        </div>
+
+        <div id="noResults" class="no-results hidden">
+          No worklogs found for selected range
         </div>
       </div>
-
-      <button id="loadBtn" class="load-btn">Load</button>
     </div>
 
-    <div id="loadingIndicator" class="loading-indicator hidden">
-      <div class="spinner"></div>
-      <p>Loading worklogs...</p>
+    <div id="assigned" class="tab-content">
+      <div class="assigned-section">
+        <div class="assigned-header">
+          <button id="loadAssignedBtn" class="load-btn">Refresh Assigned Tasks</button>
+          
+          <div class="assigned-filters">
+            <div class="search-container">
+              <input type="text" id="assignedSearchInput" placeholder="Search tasks...">
+              <button id="clearAssignedSearchBtn" class="clear-search-btn hidden" title="Clear search">&times;</button>
+            </div>
+            <select id="assignedStatusFilter">
+              <option value="">All Statuses</option>
+            </select>
+          </div>
+        </div>
+        
+        <div id="assignedLoadingIndicator" class="loading-indicator hidden">
+          <div class="spinner"></div>
+          <p>Loading assigned tasks...</p>
+        </div>
+
+        <div id="assignedErrorMessage" class="error-message hidden"></div>
+        
+        <div class="table-container">
+          <table id="assignedTable">
+            <thead>
+              <tr>
+                <th>Issue Key</th>
+                <th>Summary</th>
+                <th>Status</th>
+                <th>Updated</th>
+              </tr>
+            </thead>
+            <tbody id="assignedTableBody">
+            </tbody>
+          </table>
+        </div>
+        
+        <div id="noAssignedResults" class="no-results hidden">
+          No assigned tasks found
+        </div>
+      </div>
     </div>
 
-    <div id="errorMessage" class="error-message hidden"></div>
+    <div id="timers" class="tab-content">
+      <div class="timers-section">
+        <div class="add-timer-controls">
+          <select id="newTimerTaskSelect" class="task-select js-task-select">
+            <option value="">Select a task to add...</option>
+          </select>
+          <div id="newTimerTimePicker" class="time-picker-container">
+            <button type="button" id="newTimerTimeBtn" class="time-display-btn" title="Set start time (optional)">0:00 AM</button>
+            <div id="newTimerTimeDropdown" class="time-picker-dropdown hidden">
+              <div class="time-picker-sections">
+                <div class="time-picker-section">
+                  <div class="time-picker-label">Hours</div>
+                  <div class="time-picker-row">
+                    <div class="time-opt hour-opt" data-val="1">1</div>
+                    <div class="time-opt hour-opt" data-val="2">2</div>
+                    <div class="time-opt hour-opt" data-val="3">3</div>
+                    <div class="time-opt hour-opt" data-val="4">4</div>
+                    <div class="time-opt hour-opt" data-val="5">5</div>
+                    <div class="time-opt hour-opt" data-val="6">6</div>
+                    <div class="time-opt hour-opt" data-val="7">7</div>
+                    <div class="time-opt hour-opt" data-val="8">8</div>
+                    <div class="time-opt hour-opt" data-val="9">9</div>
+                    <div class="time-opt hour-opt" data-val="10">10</div>
+                    <div class="time-opt hour-opt" data-val="11">11</div>
+                    <div class="time-opt hour-opt active" data-val="12">12</div>
+                  </div>
+                </div>
+                <div class="time-picker-separator"></div>
+                <div class="time-picker-section">
+                  <div class="time-picker-label">Minutes</div>
+                  <div class="time-picker-row">
+                    <div class="time-opt min-opt active" data-val="00">00</div>
+                    <div class="time-opt min-opt" data-val="15">15</div>
+                    <div class="time-opt min-opt" data-val="30">30</div>
+                    <div class="time-opt min-opt" data-val="45">45</div>
+                  </div>
+                </div>
+                <div class="time-picker-separator"></div>
+                <div class="time-picker-section">
+                  <div class="time-picker-row ampm-row">
+                    <div class="time-opt ampm-opt active" data-val="AM">AM</div>
+                    <div class="time-opt ampm-opt" data-val="PM">PM</div>
+                  </div>
+                </div>
+              </div>
+              <div class="time-picker-footer">
+                <button type="button" class="time-picker-ok-btn action-btn" style="padding: 4px 12px; margin-top:0;">OK</button>
+              </div>
+            </div>
+          </div>
+          <button id="addTimerBtn" class="action-btn">Add Timer</button>
+        </div>
+        
+        <div id="timersList" class="timers-list">
+          <!-- Dynamically populated timers go here -->
+        </div>
 
-    <div id="resultsSection" class="results-section hidden">
-      <div class="summary">
-        <h2>Total Time: <span id="totalTime">0h 0m</span></h2>
-      </div>
-
-      <div class="table-container">
-        <table id="worklogTable">
-          <thead>
-            <tr>
-              <th>Issue Key</th>
-              <th>Issue Summary</th>
-              <th>Time Spent</th>
-            </tr>
-          </thead>
-          <tbody id="worklogTableBody">
-          </tbody>
-        </table>
-      </div>
-
-      <div id="noResults" class="no-results hidden">
-        No worklogs found for selected range
+        <div class="timers-footer">
+          <button id="sendTimersToEntryBtn" class="load-btn hidden">Send All to Enter Time Tab</button>
+        </div>
       </div>
     </div>
+
+    <div id="enterTime" class="tab-content">
+      <div class="enter-time-section">
+        <p class="description">Select a task, date/time, and time spent (e.g. 1h 30m).</p>
+        <div id="enterTimeErrorMessage" class="error-message hidden"></div>
+        
+        <div id="timeEntriesContainer">
+          <!-- Dynamically populated rows go here -->
+        </div>
+
+        <div class="form-actions">
+          <button id="addRowBtn" class="action-btn">Add Row</button>
+          <button id="submitAllBtn" class="submit-btn load-btn">Submit All</button>
+        </div>
+
+        <div id="submitLoadingIndicator" class="loading-indicator hidden">
+          <div class="spinner"></div>
+          <p>Submitting timesheets...</p>
+        </div>
+
+        <div id="submitResults" class="submit-results hidden">
+        </div>
+      </div>
+    </div>
+
+
   </div>
 
+  <div id="toastContainer" class="toast-container"></div>
+  
+  <script src="jiraAPI.js"></script>
   <script src="popup.js"></script>
 </body>
 </html>

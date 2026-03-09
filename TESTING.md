@@ -5,7 +5,7 @@ Use this checklist to verify the extension works correctly.
 ## Pre-Testing Setup
 
 - [ ] Extension installed in Chrome
-- [ ] Extension version 1.1.0 confirmed
+- [ ] Extension version 1.2.0 confirmed
 - [ ] Icon displays correctly in toolbar
 - [ ] Jira Cloud tab open and logged in
 - [ ] You have logged time in Jira (for testing)
@@ -51,12 +51,39 @@ Use this checklist to verify the extension works correctly.
 #### With Worklogs
 - [ ] Total time displays correctly (format: "Xh Ym")
 - [ ] Table shows all issues with logged time
+- [ ] Issues are sorted chronologically by time, showing start times
 - [ ] Issue keys are displayed and clickable
 - [ ] Issue summaries are displayed
 - [ ] Time spent per issue is correct
-- [ ] Per-day breakdown shows dates correctly
-- [ ] Clicking an issue opens it in Jira
+- [ ] Per-day breakdown shows dates in `dd/mm/yyyy` format
+- [ ] Clicking an issue opens it in Jira, and middle-clicking opens in a new tab
 - [ ] Table is scrollable if many results
+
+### 3.5. Data Entry, Assigned Tasks & Timers
+
+#### Time Entry
+- [ ] Switch to the "Enter Time" tab (verify tab state preserves on refresh)
+- [ ] Select a date and use the custom Time Selection UI (Hours, Minutes, AM/PM)
+- [ ] Verify the comment field expands full-width with 3 rows of height
+
+#### Assigned Tasks
+- [ ] Switch to "Assigned Tasks" tab
+- [ ] Verify tasks are loaded and displayed with correct status
+- [ ] Test status filter dropdown
+- [ ] Test search functionality
+- [ ] Test "Clear" button for search
+
+#### Work Timers
+- [ ] Switch to "Timers" tab
+- [ ] Add a new timer for an issue
+- [ ] Start and stop the timer
+- [ ] Verify timer state is preserved after closing/opening the extension
+- [ ] Verify time can be logged to Jira from the timer
+
+#### Theme & UI
+- [ ] Toggle between Light and Dark modes
+- [ ] Verify all UI elements remain readable in both modes
+- [ ] Verify "Refresh" button works on all relevant tabs
 
 #### Without Worklogs
 - [ ] "No worklogs found for selected range" message appears

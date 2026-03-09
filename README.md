@@ -7,9 +7,15 @@ A Chrome Extension that displays your logged work hours in Jira Cloud with custo
 - ✅ View time logged Today, This Week, This Month, or Custom Date Range
 - ✅ See total time per issue and overall total
 - ✅ Per-day breakdown view with date grouping
-- ✅ Clickable issue links - open issues directly in Jira
+- ✅ Dashboard sorted by chronological order with start times
+- ✅ **Work Timers**: Start/stop timers for issues with custom time picking
+- ✅ **Assigned Tasks View**: See all tasks assigned to you with status filtering
+- ✅ **Theme Support**: Toggle between Light and Dark modes
+- ✅ Custom time selection UI for logging work with a full-width comment field
+- ✅ Clickable issue links - open issues directly in Jira (supports middle-click for new tab)
+- ✅ Remembers your active tab state across refreshes
 - ✅ Uses existing Jira session (no API token required)
-- ✅ Clean, responsive UI with loading states
+- ✅ Clean, responsive UI with loading states and `dd/mm/yyyy` formatted dates
 - ✅ Pagination support for large datasets
 - ✅ Open in popup or full tab mode
 - ✅ Keyboard shortcut support (Ctrl+Shift+J / Cmd+Shift+J)
@@ -54,8 +60,6 @@ A Chrome Extension that displays your logged work hours in Jira Cloud with custo
    - Per-day breakdown showing when work was logged
    - Click any issue to open it in Jira
 
-<img width="1769" height="794" alt="extn" src="https://github.com/user-attachments/assets/d320a9e0-7e84-4f99-b147-1465f76d8d66" />
-
 ### Tab Mode
 
 Open the extension in a full browser tab for more space:
@@ -66,19 +70,18 @@ Open the extension in a full browser tab for more space:
    - Mac: `Cmd+Shift+J`
 3. The extension opens in a new tab with full-screen layout
 
-<img width="1269" height="797" alt="new tab" src="https://github.com/user-attachments/assets/6bafac5e-fd47-478d-8f07-1c31b3557064" />
-
 ## File Structure
 
 ```
 jira-timesheet-dashboard/
 ├── manifest.json          # Extension configuration (Manifest V3)
 ├── popup.html            # Popup UI structure
-├── popup.js              # Main logic and API integration
-├── styles.css            # Styling
+├── popup.js              # Main logic and UI controllers
+├── jiraAPI.js            # Jira REST API service layer
+├── styles.css            # Styling (Light/Dark mode support)
 ├── background.js         # Service worker for background tasks
 ├── icons/
-│   └── icon.png         # Extension icon (you need to add this)
+│   └── icon.png         # Extension icon
 └── README.md            # This file
 ```
 
@@ -161,7 +164,8 @@ After making changes, click the refresh icon on the extension card in `chrome://
 
 ## License
 
-This project is provided as-is for personal and commercial use.
+This project is licensed under the **Creative Commons Attribution-NonCommercial-ShareAlike 4.0 International License**. See the [LICENSE](LICENSE) file for details.
+
 
 ## Support
 
@@ -169,8 +173,3 @@ For issues or questions:
 1. Check the Troubleshooting section above
 2. Review Chrome DevTools console for errors
 3. Verify your Jira permissions allow worklog access
-
----
-
-**Built with ❤️ for Jira users who want better timesheet visibility**
-

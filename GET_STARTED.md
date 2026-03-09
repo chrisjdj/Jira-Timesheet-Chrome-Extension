@@ -17,7 +17,9 @@
 3. Select date range (Today, This Week, This Month, or Custom)
 4. Click **Load**
 5. View your worklogs with per-day breakdown! 🎉
-6. Click any issue to open it in Jira
+6. Explore **Timers** and **Assigned Tasks** tabs for more features
+7. Toggle **Dark Mode** for a personalized experience
+8. Click any issue to open it in Jira
 
 ---
 
