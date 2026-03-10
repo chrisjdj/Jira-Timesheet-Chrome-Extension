@@ -23,6 +23,7 @@
 1. Click the **Timers** tab
 2. Enter an issue key and click **+ Add Timer**
 3. Click **Start** to track time
+4. Use the **Reset/Undo icon** to revert custom time selection to the current time
 
 ### View Assigned Tasks
 1. Click the **Assigned Tasks** tab
@@ -179,7 +180,7 @@ worklogDate >= START_DATE AND worklogDate <= END_DATE AND worklogAuthor = curren
 
 ## Version Info
 
-**Current Version:** 1.2.0  
+**Current Version:** 1.2.1  
 **Manifest Version:** 3  
 **Minimum Chrome:** 88+
 

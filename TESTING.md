@@ -5,7 +5,7 @@ Use this checklist to verify the extension works correctly.
 ## Pre-Testing Setup
 
 - [ ] Extension installed in Chrome
-- [ ] Extension version 1.2.0 confirmed
+- [ ] Extension version 1.2.1 confirmed
 - [ ] Icon displays correctly in toolbar
 - [ ] Jira Cloud tab open and logged in
 - [ ] You have logged time in Jira (for testing)
@@ -56,6 +56,7 @@ Use this checklist to verify the extension works correctly.
 - [ ] Issue summaries are displayed
 - [ ] Time spent per issue is correct
 - [ ] Per-day breakdown shows dates in `dd/mm/yyyy` format
+- [ ] Assigned Tasks "Updated" column shows separate Date and Time
 - [ ] Clicking an issue opens it in Jira, and middle-clicking opens in a new tab
 - [ ] Table is scrollable if many results
 
@@ -76,6 +77,7 @@ Use this checklist to verify the extension works correctly.
 #### Work Timers
 - [ ] Switch to "Timers" tab
 - [ ] Add a new timer for an issue
+- [ ] Test the **Undo/Reset icon** to revert custom time selection to current time
 - [ ] Start and stop the timer
 - [ ] Verify timer state is preserved after closing/opening the extension
 - [ ] Verify time can be logged to Jira from the timer
@@ -83,6 +85,7 @@ Use this checklist to verify the extension works correctly.
 #### Theme & UI
 - [ ] Toggle between Light and Dark modes
 - [ ] Verify all UI elements remain readable in both modes
+- [ ] Verify unified hover effects for issues and comments in Dashboard
 - [ ] Verify "Refresh" button works on all relevant tabs
 
 #### Without Worklogs

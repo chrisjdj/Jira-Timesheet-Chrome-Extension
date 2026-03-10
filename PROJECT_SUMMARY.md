@@ -48,13 +48,12 @@ All requirements from the specification have been implemented and the extension 
 - ✅ "No results" state handling
 
 ### Data Entry & UI Polish
-- ✅ Custom time selection UI (Hours, Minutes, AM/PM) in the "Enter Time" tab
-- ✅ **Work Timers**: Start/stop timers for issues with custom time picking
-- ✅ **Assigned Tasks**: View all tasks assigned to you with status filtering
-- ✅ **Theme Toggle**: Switch between Light and Dark modes
+- ✅ **Work Timers**: Start/stop timers for issues with custom time picking and **Undo/Reset functionality**
+- ✅ **Assigned Tasks**: View all tasks assigned to you with status filtering, search, and separate Date/Time columns
+- ✅ **Theme Toggle**: Switch between Light and Dark modes with optimized row visibility
 - ✅ Full-width, 3-row textarea for work descriptions/comments
 - ✅ Active tab preservation (retains view across reloads)
-- ✅ Formatted dates (`dd/mm/yyyy`) and cleaned up UI
+- ✅ Formatted dates (`dd/mm/yyyy`) and polished UI with unified hover effects
 
 ### API Integration
 - ✅ Jira REST API v3 (`/rest/api/3/search`)
@@ -255,10 +254,10 @@ The code is structured to easily support:
 ## Code Statistics
 
 - **Total Files:** 17 (9 code + 8 documentation)
-- **Lines of Code:** ~2,500+
-- **JavaScript:** ~1,800+ lines (popup.js + jiraAPI.js)
-- **CSS:** ~700+ lines (styles.css)
-- **HTML:** ~50 lines (popup.html)
+- **Lines of Code:** ~3,200+
+- **JavaScript:** ~1,900+ lines (popup.js + jiraAPI.js + background.js)
+- **CSS:** ~1,000+ lines (styles.css)
+- **HTML:** ~250+ lines (popup.html + create-icon.html)
 - **Documentation:** ~2,000+ lines
 
 ## Compliance
@@ -280,4 +279,4 @@ The Jira Timesheet Dashboard Chrome Extension is **complete and production-ready
 **Documentation:** ✅ COMPREHENSIVE  
 **Code Quality:** ✅ PRODUCTION-READY
 
-**Last Updated:** March 9, 2026
+**Last Updated:** March 10, 2026

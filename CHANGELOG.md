@@ -67,6 +67,23 @@ All notable changes to the Jira Timesheet Dashboard extension will be documented
 
 ---
 
+## [1.2.1] - March 10, 2026
+
+#### New Features & Enhancements
+- ✅ **Timer Undo**: Added a reset icon to the custom time picker in the Timers tab to revert to current time.
+- ✅ **Assigned Tasks Improvements**: Split the "Updated" column into separate Date and Time for better readability.
+- ✅ **UI Refinements**:
+    - Unified hover effects for issues and associated comments.
+    - Improved "day-total" row visibility in dark mode.
+    - Increased font size and padding for date headers.
+    - Prevented "Issue Key" header text wrapping.
+
+#### Bug Fixes
+- ✅ **Timer Validation**: Prevented internal errors when logging time less than 1 minute.
+- ✅ **Assigned Tasks UI**: Fixed search input field size after UI updates.
+
+---
+
 ### [1.2.0] - March 9, 2026
 
 #### New Features & Enhancements
@@ -129,7 +146,8 @@ All notable changes to the Jira Timesheet Dashboard extension will be documented
 
 | Version | Release Date | Key Features |
 |---------|--------------|--------------|
-| 1.2.0   | Feb 26, 2026 | Time selection UI, Tab state preservation, Dashboard sorting, UI fixes |
+| 1.2.1   | Mar 10, 2026 | Timer Undo, Split Date/Time in Assigned Tasks, UI refinements, Bug fixes |
+| 1.2.0   | Mar 9, 2026  | Time selection UI, Tab state preservation, Dashboard sorting, UI fixes |
 | 1.1.0   | Feb 17, 2026 | Tab mode, keyboard shortcuts, clickable issues, per-day breakdown |
 | 1.0.0   | Jan 2026     | Initial release with core functionality |
 

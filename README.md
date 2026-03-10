@@ -8,9 +8,9 @@ A Chrome Extension that displays your logged work hours in Jira Cloud with custo
 - ✅ See total time per issue and overall total
 - ✅ Per-day breakdown view with date grouping
 - ✅ Dashboard sorted by chronological order with start times
-- ✅ **Work Timers**: Start/stop timers for issues with custom time picking
-- ✅ **Assigned Tasks View**: See all tasks assigned to you with status filtering
-- ✅ **Theme Support**: Toggle between Light and Dark modes
+- ✅ **Work Timers**: Start/stop timers for issues with custom time picking and **Undo/Reset functionality**
+- ✅ **Assigned Tasks View**: See all tasks assigned to you with status filtering and separate Date/Time columns
+- ✅ **Theme Support**: Toggle between Light and Dark modes with optimized row visibility
 - ✅ Custom time selection UI for logging work with a full-width comment field
 - ✅ Clickable issue links - open issues directly in Jira (supports middle-click for new tab)
 - ✅ Remembers your active tab state across refreshes

@@ -23,7 +23,7 @@ The extension icon is already included, so you can load it directly:
 
 You should see:
 - "Jira Timesheet Dashboard" in your extensions list
-- Version 1.2.0
+- Version 1.2.1
 - Status: Enabled
 - No errors displayed
 
