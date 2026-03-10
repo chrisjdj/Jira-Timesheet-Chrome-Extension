@@ -74,6 +74,7 @@ All notable changes to the Jira Timesheet Dashboard extension will be documented
 - ✅ **Assigned Tasks Improvements**: Split the "Updated" column into separate Date and Time for better readability.
 - ✅ **UI Refinements**:
     - Unified hover effects for issues and associated comments.
+    - Equal width distribution for navigation tabs.
     - Improved "day-total" row visibility in dark mode.
     - Increased font size and padding for date headers.
     - Prevented "Issue Key" header text wrapping.

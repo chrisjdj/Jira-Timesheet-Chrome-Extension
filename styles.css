@@ -172,13 +172,13 @@ header h1 {
   display: flex;
   background-color: var(--bg-surface);
   border-bottom: 1px solid var(--border-color);
-  padding: 0 16px;
-  gap: 16px;
+  padding: 0;
   z-index: 5;
   box-shadow: var(--shadow-sm);
 }
 
 .tab-btn {
+  flex: 1;
   padding: 14px 4px;
   background: none;
   border: none;
@@ -188,6 +188,7 @@ header h1 {
   color: var(--text-secondary);
   cursor: pointer;
   transition: var(--transition);
+  text-align: center;
 }
 
 .tab-btn:hover {
