@@ -70,11 +70,11 @@
           <table id="worklogTable">
             <thead>
               <tr>
-                <th>Issue Key</th>
+                <th style="white-space: nowrap;">Issue Key</th>
                 <th>Issue Summary</th>
-                <th>Start Time</th>
-                <th>End Time</th>
-                <th>Time Spent</th>
+                <th style="white-space: nowrap;">Start Time</th>
+                <th style="white-space: nowrap;">End Time</th>
+                <th style="white-space: nowrap;">Time Spent</th>
               </tr>
             </thead>
             <tbody id="worklogTableBody">
@@ -140,6 +140,7 @@
           </select>
           <div id="newTimerTimePicker" class="time-picker-container">
             <button type="button" id="newTimerTimeBtn" class="time-display-btn" title="Set start time (optional)">0:00 AM</button>
+            <span id="newTimerTimeResetIcon" class="reset-icon hidden" title="Reset to current time">&times;</span>
             <div id="newTimerTimeDropdown" class="time-picker-dropdown hidden">
               <div class="time-picker-sections">
                 <div class="time-picker-section">

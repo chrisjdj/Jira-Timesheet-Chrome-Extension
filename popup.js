@@ -26,6 +26,16 @@ const assignedSearchInput = document.getElementById('assignedSearchInput');
 const clearAssignedSearchBtn = document.getElementById('clearAssignedSearchBtn');
 const assignedStatusFilter = document.getElementById('assignedStatusFilter');
 
+// DOM Elements - Timers
+const newTimerTaskSelect = document.getElementById('newTimerTaskSelect');
+const newTimerTimePicker = document.getElementById('newTimerTimePicker');
+const newTimerTimeBtn = document.getElementById('newTimerTimeBtn');
+const newTimerTimeDropdown = document.getElementById('newTimerTimeDropdown');
+const newTimerTimeResetIcon = document.getElementById('newTimerTimeResetIcon');
+const addTimerBtn = document.getElementById('addTimerBtn');
+const timersList = document.getElementById('timersList');
+const sendTimersToEntryBtn = document.getElementById('sendTimersToEntryBtn');
+
 // DOM Elements - Enter Time
 const enterTimeErrorMessage = document.getElementById('enterTimeErrorMessage');
 const timeEntriesContainer = document.getElementById('timeEntriesContainer');
@@ -33,15 +43,6 @@ const addRowBtn = document.getElementById('addRowBtn');
 const submitAllBtn = document.getElementById('submitAllBtn');
 const submitLoadingIndicator = document.getElementById('submitLoadingIndicator');
 const submitResults = document.getElementById('submitResults');
-
-// DOM Elements - Timers Tab
-const newTimerTaskSelect = document.getElementById('newTimerTaskSelect');
-const addTimerBtn = document.getElementById('addTimerBtn');
-const timersList = document.getElementById('timersList');
-const sendTimersToEntryBtn = document.getElementById('sendTimersToEntryBtn');
-const newTimerTimePicker = document.getElementById('newTimerTimePicker');
-const newTimerTimeBtn = document.getElementById('newTimerTimeBtn');
-const newTimerTimeDropdown = document.getElementById('newTimerTimeDropdown');
 
 // Multi-Timer State
 let activeTimers = {}; // { taskId: { currentState: 'running'|'stopped', accumulatedMs: number, lastStarted: timestamp } }
@@ -464,14 +465,30 @@ function displayResults(worklogs) {
       dayTotal += worklog.timeSpentSeconds;
       
       const row = document.createElement('tr');
+      row.className = 'worklog-row';
       row.innerHTML = `
         <td><a href="#" class="issue-link" data-issue-key="${escapeHtml(worklog.key)}">${escapeHtml(worklog.key)}</a></td>
         <td>${escapeHtml(worklog.summary)}</td>
-        <td>${formatStartTime(worklog.started)}</td>
-        <td>${formatEndTime(worklog.started, worklog.timeSpentSeconds)}</td>
-        <td>${formatTime(worklog.timeSpentSeconds)}</td>
+        <td style="white-space: nowrap;">${formatStartTime(worklog.started)}</td>
+        <td style="white-space: nowrap;">${formatEndTime(worklog.started, worklog.timeSpentSeconds)}</td>
+        <td style="white-space: nowrap;">${formatTime(worklog.timeSpentSeconds)}</td>
       `;
-      worklogTableBody.appendChild(row);
+      
+      const commentText = extractCommentText(worklog.comment);
+      if (commentText) {
+        row.style.borderBottom = 'none';
+        worklogTableBody.appendChild(row);
+        
+        const commentRow = document.createElement('tr');
+        commentRow.className = 'comment-row';
+        commentRow.innerHTML = `
+          <td></td>
+          <td colspan="4" class="worklog-comment" style="font-style: italic; font-size: 0.9em;">${escapeHtml(commentText)}</td>
+        `;
+        worklogTableBody.appendChild(commentRow);
+      } else {
+        worklogTableBody.appendChild(row);
+      }
     }
     
     // Add day total row
@@ -479,7 +496,7 @@ function displayResults(worklogs) {
     dayTotalRow.className = 'day-total';
     dayTotalRow.innerHTML = `
       <td colspan="4"><strong>Day Total</strong></td>
-      <td><strong>${formatTime(dayTotal)}</strong></td>
+      <td style="white-space: nowrap;"><strong>${formatTime(dayTotal)}</strong></td>
     `;
     worklogTableBody.appendChild(dayTotalRow);
   }
@@ -542,6 +559,32 @@ function escapeHtml(text) {
   const div = document.createElement('div');
   div.textContent = text;
   return div.innerHTML;
+}
+
+/**
+ * Extract text from Jira comment (can be string or ADF object)
+ */
+function extractCommentText(comment) {
+  if (!comment) return '';
+  if (typeof comment === 'string') return comment;
+  
+  if (comment.type === 'doc' && comment.content) {
+    let text = [];
+    for (const block of comment.content) {
+      if (block.type === 'paragraph' && block.content) {
+        for (const inline of block.content) {
+          if (inline.text) text.push(inline.text);
+        }
+      }
+    }
+    return text.join(' ');
+  }
+  
+  try {
+    return JSON.stringify(comment);
+  } catch (e) {
+    return '';
+  }
 }
 
 /**
@@ -667,14 +710,17 @@ function displayAssignedTasks(tasks) {
     const day = String(updatedDate.getDate()).padStart(2, '0');
     const month = String(updatedDate.getMonth() + 1).padStart(2, '0');
     const year = updatedDate.getFullYear();
-    const formattedUpdated = `${day}/${month}/${year} ` + 
-                             updatedDate.toLocaleTimeString([], {hour: '2-digit', minute:'2-digit'});
+    const formattedDate = `${day}/${month}/${year}`;
+    const formattedTime = updatedDate.toLocaleTimeString([], {hour: '2-digit', minute:'2-digit'});
 
     row.innerHTML = `
       <td><a href="#" class="issue-link" data-issue-key="${escapeHtml(task.key)}">${escapeHtml(task.key)}</a></td>
       <td>${escapeHtml(task.fields.summary)}</td>
       <td>${escapeHtml(task.fields.status.name)}</td>
-      <td>${escapeHtml(formattedUpdated)}</td>
+      <td>
+        <div class="updated-date">${escapeHtml(formattedDate)}</div>
+        <div class="updated-time">${escapeHtml(formattedTime)}</div>
+      </td>
     `;
     assignedTableBody.appendChild(row);
   });
@@ -797,32 +843,35 @@ function addNewTimer() {
     return;
   }
 
-  // Calculate initial accumulated time from picker
-  const hours = parseInt(newTimerTimePicker.dataset.hour || '12');
-  const minutes = parseInt(newTimerTimePicker.dataset.min || '0');
-  const ampm = newTimerTimePicker.dataset.ampm || 'AM';
+  let accumulatedMs = 0;
+  let firstStarted = Date.now();
   
-  // Construct start date based on selected time
-  const startTime = new Date();
-  let h = hours % 12; // 12 becomes 0
-  if (ampm === 'PM') h += 12;
-  startTime.setHours(h, minutes, 0, 0);
-
-  // If selected time is in the future today, assume it was intended for yesterday or just treat it as "now" if very close
-  // For most cases, if someone picks 10:00 AM and it's 10:15 AM, elapsed is 15 mins.
-  // If they pick 11:00 AM and it's 10:15 AM, it might be a mistake or intended for "later", 
-  // but usually users pick a past time to "start from".
-  let accumulatedMs = Date.now() - startTime.getTime();
-  if (accumulatedMs < 0) {
-    // If it's in the future, just start from 0 (now)
-    accumulatedMs = 0;
+  // If user selected a custom start time, calculate the elapsed time
+  if (newTimerTimePicker.dataset.isCustom === 'true') {
+    const hours = parseInt(newTimerTimePicker.dataset.hour || '12');
+    const minutes = parseInt(newTimerTimePicker.dataset.min || '0');
+    const ampm = newTimerTimePicker.dataset.ampm || 'AM';
+    
+    const startTime = new Date();
+    let h = hours % 12; // 12 becomes 0
+    if (ampm === 'PM') h += 12;
+    startTime.setHours(h, minutes, 0, 0);
+    
+    firstStarted = startTime.getTime();
+    accumulatedMs = Date.now() - firstStarted;
+    
+    // If the selected time is in the future, just treat it as "now"
+    if (accumulatedMs < 0) {
+      accumulatedMs = 0;
+      firstStarted = Date.now();
+    }
   }
   
   activeTimers[taskId] = {
     currentState: 'stopped',
     accumulatedMs: accumulatedMs,
     lastStarted: null,
-    firstStarted: startTime.getTime(),
+    firstStarted: firstStarted,
     comment: ''
   };
   
@@ -854,6 +903,7 @@ function setupNewTimerTimePicker() {
   newTimerTimePicker.dataset.hour = String(h);
   newTimerTimePicker.dataset.min = mStr;
   newTimerTimePicker.dataset.ampm = ampm;
+  newTimerTimePicker.dataset.isCustom = 'false';
   
   const okBtn = newTimerTimeDropdown.querySelector('.time-picker-ok-btn');
   
@@ -870,7 +920,13 @@ function setupNewTimerTimePicker() {
   }
   
   function updateBtnText() {
-    newTimerTimeBtn.textContent = `${newTimerTimePicker.dataset.hour}:${newTimerTimePicker.dataset.min} ${newTimerTimePicker.dataset.ampm}`;
+    if (newTimerTimePicker.dataset.isCustom === 'true') {
+      newTimerTimeBtn.textContent = `${newTimerTimePicker.dataset.hour}:${newTimerTimePicker.dataset.min} ${newTimerTimePicker.dataset.ampm}`;
+      if (newTimerTimeResetIcon) newTimerTimeResetIcon.classList.remove('hidden');
+    } else {
+      newTimerTimeBtn.textContent = 'Current Time';
+      if (newTimerTimeResetIcon) newTimerTimeResetIcon.classList.add('hidden');
+    }
   }
 
   updateActiveStates();
@@ -896,6 +952,7 @@ function setupNewTimerTimePicker() {
       } else if (opt.classList.contains('ampm-opt')) {
         newTimerTimePicker.dataset.ampm = val;
       }
+      newTimerTimePicker.dataset.isCustom = 'true';
       updateActiveStates();
       updateBtnText();
     });
@@ -905,6 +962,14 @@ function setupNewTimerTimePicker() {
     e.stopPropagation();
     newTimerTimeDropdown.classList.add('hidden');
   });
+
+  if (newTimerTimeResetIcon) {
+    newTimerTimeResetIcon.addEventListener('click', (e) => {
+      e.stopPropagation();
+      resetNewTimerTimePicker();
+      showToast('Time reset to current', 'info');
+    });
+  }
 }
 
 function resetNewTimerTimePicker() {
@@ -923,7 +988,10 @@ function resetNewTimerTimePicker() {
   newTimerTimePicker.dataset.hour = String(h);
   newTimerTimePicker.dataset.min = mStr;
   newTimerTimePicker.dataset.ampm = ampm;
-  newTimerTimeBtn.textContent = `${h}:${mStr} ${ampm}`;
+  newTimerTimePicker.dataset.isCustom = 'false';
+  
+  newTimerTimeBtn.textContent = 'Current Time';
+  if (newTimerTimeResetIcon) newTimerTimeResetIcon.classList.add('hidden');
   
   newTimerTimeDropdown.querySelectorAll('.time-opt').forEach(opt => {
     const val = opt.getAttribute('data-val');
@@ -954,17 +1022,7 @@ function toggleTimer(taskId) {
   renderTimersList();
 }
 
-function resetTimer(taskId) {
-  const timer = activeTimers[taskId];
-  if (!timer) return;
-  
-  timer.currentState = 'stopped';
-  timer.accumulatedMs = 0;
-  timer.lastStarted = null;
-  
-  saveTimersState();
-  renderTimersList();
-}
+
 
 function deleteTimer(taskId) {
   delete activeTimers[taskId];
@@ -1029,8 +1087,8 @@ function renderTimersList() {
         <button class="timer-action-btn toggle-timer-btn ${isRunning ? 'timer-pause-btn' : 'timer-play-btn'}" aria-label="${isRunning ? 'Pause' : 'Play'}">
           ${isRunning ? '⏸' : '▶'}
         </button>
-        <button class="timer-action-btn reset-timer-btn" title="Reset to 0">⟲</button>
         <button class="timer-action-btn delete-timer-btn" title="Delete Timer">&times;</button>
+
       </div>
       <div class="timer-row-comment">
         <textarea class="timer-comment-input" placeholder="What are you working on?" rows="4">${escapeHtml(timer.comment || '')}</textarea>
@@ -1044,7 +1102,6 @@ function renderTimersList() {
     });
     
     row.querySelector('.toggle-timer-btn').addEventListener('click', () => toggleTimer(taskId));
-    row.querySelector('.reset-timer-btn').addEventListener('click', () => resetTimer(taskId));
     row.querySelector('.delete-timer-btn').addEventListener('click', () => deleteTimer(taskId));
     
     timersList.appendChild(row);
@@ -1112,10 +1169,16 @@ function sendAllTimersToEntry() {
     targetRow.querySelector('.comment-input').value = timer.comment || '';
     
     addedCount++;
+    delete activeTimers[taskId];
   });
   
-  // Wipe timers state completely
-  activeTimers = {};
+  if (addedCount === 0) {
+    saveTimersState();
+    renderTimersList();
+    showToast('No timers had enough time (>= 1m) to send.', 'error');
+    return;
+  }
+
   saveTimersState();
   renderTimersList();
   
@@ -1127,11 +1190,7 @@ function sendAllTimersToEntry() {
   // Switch to Enter Time tab
   document.querySelector('.tab-btn[data-tab="enterTime"]').click();
   
-  if (addedCount > 0) {
-    showToast(`Sent ${addedCount} timed tasks to the entry sheet!`, 'success');
-  } else {
-    showToast('No timers had enough time (>= 1m) to send.', 'info');
-  }
+  showToast(`Sent ${addedCount} timed tasks to the entry sheet!`, 'success');
 }
 
 // Make these globally accessible to popup.html inline handlers? No, Chrome CSP forbids it.

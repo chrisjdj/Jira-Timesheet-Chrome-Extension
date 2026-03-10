@@ -120,7 +120,8 @@ const JiraAPI = {
           summary: issue.fields.summary,
           date: new Date(worklog.started).toISOString().slice(0, 10),
           started: worklog.started,
-          timeSpentSeconds: worklog.timeSpentSeconds || 0
+          timeSpentSeconds: worklog.timeSpentSeconds || 0,
+          comment: worklog.comment
         });
       }
     }
