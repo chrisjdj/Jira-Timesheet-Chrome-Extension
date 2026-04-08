@@ -17,9 +17,33 @@
 3. Select date range (Today, This Week, This Month, or Custom)
 4. Click **Load**
 5. View your worklogs with per-day breakdown! 🎉
-6. Explore **Timers** and **Assigned Tasks** tabs for more features
-7. Toggle **Dark Mode** for a personalized experience
-8. Click any issue to open it in Jira
+
+### Explore All Tabs:
+
+- **Dashboard** - View logged time by date range
+- **Assigned Tasks** - See tasks assigned to you with search/filter
+- **Timers** - Track time with built-in stopwatches
+- **Enter Time** - Log work directly to Jira
+- **Settings** - Configure reminders and daily targets
+- **Theme** - Toggle light/dark mode
+
+### Quick Actions:
+- Click any issue to open it in Jira
+- Use `Ctrl+Shift+J` to open in full tab mode
+- Pin extension to toolbar for quick access
+
+---
+
+## Step 3: Configure Reminders (Optional)
+
+1. Go to **Settings** tab
+2. Set your **daily target** (default: 6h 30m)
+3. Add **reminder times** (e.g., 5:00 PM, 5:30 PM)
+4. Enable **morning reminder** if desired
+5. Choose your **working days**
+6. Click **Save Settings**
+
+Now you'll get notified if you haven't logged enough time!
 
 ---
 
@@ -40,6 +64,8 @@ You're ready to track your Jira time logs efficiently.
 - Use "This Week" for weekly time reviews
 - Use "This Month" for monthly reports
 - Custom range for specific project periods
+- Use Timers to track time as you work
+- Send timers to Enter Time to log all at once
 
 ---
 

@@ -86,6 +86,14 @@ if (submitAllBtn) submitAllBtn.addEventListener('click', submitAllTimeEntries);
 if (themeToggleBtn) themeToggleBtn.addEventListener('click', toggleTheme);
 if (refreshBtn) refreshBtn.addEventListener('click', handleRefreshClick);
 
+// Settings Listener
+const settingsBtn = document.getElementById('settingsBtn');
+if (settingsBtn) {
+  settingsBtn.addEventListener('click', () => {
+    showSettingsTab();
+  });
+}
+
 // Global Time Picker Close Listener
 document.addEventListener('click', (e) => {
   if (!e.target.closest('.time-picker-dropdown') && !e.target.closest('.time-display-btn')) {
@@ -171,6 +179,14 @@ async function initialize() {
     // Add tab mode class to body for styling
     document.body.classList.add('tab-mode');
   }
+
+  // Load reminder settings and populate Settings tab UI
+  loadSettings();
+
+  // Check and show warning banner on dashboard (after a short delay to let data load)
+  setTimeout(() => {
+    checkAndShowWarningBanner();
+  }, 2000);
 }
 
 /**
@@ -198,6 +214,19 @@ function handleTabClick(event) {
       loadAssignedTasks(false);
     }
   }
+}
+
+function showSettingsTab() {
+  const targetTab = 'settings';
+  localStorage.setItem('activeTab', targetTab);
+  
+  tabBtns.forEach(btn => {
+    btn.classList.toggle('active', btn.getAttribute('data-tab') === targetTab);
+  });
+  
+  tabContents.forEach(content => {
+    content.classList.toggle('active', content.id === targetTab);
+  });
 }
 
 /**
@@ -1079,7 +1108,7 @@ function renderTimersList() {
     
     row.innerHTML = `
       <div class="timer-row-info">
-        <div class="timer-row-title" title="${escapeHtml(summary)}">${escapeHtml(taskId)} - ${escapeHtml(summary)}</div>
+        <div class="timer-row-title" title="${escapeHtml(summary)}"><a href="#" class="issue-link" data-issue-key="${escapeHtml(taskId)}">${escapeHtml(taskId)}</a> - ${escapeHtml(summary)}</div>
         <div class="timer-row-started">Started at: ${timer.firstStarted ? new Date(timer.firstStarted).toLocaleTimeString([], {hour: '2-digit', minute:'2-digit'}) : new Date().toLocaleTimeString([], {hour: '2-digit', minute:'2-digit'})}</div>
         <div class="timer-row-display">${formatTimerDisplay(currentMs)}</div>
       </div>
@@ -1103,6 +1132,13 @@ function renderTimersList() {
     
     row.querySelector('.toggle-timer-btn').addEventListener('click', () => toggleTimer(taskId));
     row.querySelector('.delete-timer-btn').addEventListener('click', () => deleteTimer(taskId));
+    
+    // Add click handlers for issue links
+    const issueLinks = row.querySelectorAll('.issue-link');
+    issueLinks.forEach(link => {
+      link.addEventListener('click', handleIssueClick);
+      link.addEventListener('auxclick', handleIssueClick);
+    });
     
     timersList.appendChild(row);
   });
@@ -1278,6 +1314,9 @@ function addTimeEntryRow(initialStartTime = null) {
   }
   
   const now = initialStartTime ? new Date(initialStartTime) : new Date();
+  if (isNaN(now.getTime())) {
+    now.setTime(Date.now());
+  }
   row.querySelector('.start-date-input').value = formatDate(now);
   
   let h = now.getHours();
@@ -1287,13 +1326,15 @@ function addTimeEntryRow(initialStartTime = null) {
   
   let mStr = '00';
   if (initialStartTime) {
-    // If we have a specific start time, preserve minutes exactly
     mStr = String(m).padStart(2, '0');
   } else {
-    // Round to nearest 15 mins for fresh rows
     if (m >= 15 && m < 30) mStr = '15';
     else if (m >= 30 && m < 45) mStr = '30';
     else if (m >= 45) mStr = '45';
+  }
+
+  if (isNaN(m) || mStr === 'NaN') {
+    mStr = '00';
   }
 
   row.dataset.hour = String(h);
@@ -1400,6 +1441,7 @@ function populateTaskDropdowns(tasks) {
         summary = summary.substring(0, 25) + '...';
       }
       option.textContent = `${task.key} - ${summary} (${task.fields.status.name})`;
+      option.title = task.fields.summary;
       select.appendChild(option);
     });
 
@@ -1554,6 +1596,312 @@ function showToast(message, type = 'info') {
   setTimeout(() => {
     toast.remove();
   }, 3000);
+}
+
+// ==========================================
+// SETTINGS TAB LOGIC
+// ==========================================
+
+// DOM Elements - Settings
+const reminderEnabledToggle = document.getElementById('reminderEnabledToggle');
+const targetHoursInput = document.getElementById('targetHours');
+const targetMinutesInput = document.getElementById('targetMinutes');
+const persistentNotifToggle = document.getElementById('persistentNotifToggle');
+const alertTimeChipsContainer = document.getElementById('alertTimeChips');
+const newAlertTimeInput = document.getElementById('newAlertTimeInput');
+const addAlertTimeBtn = document.getElementById('addAlertTimeBtn');
+const morningReminderToggle = document.getElementById('morningReminderToggle');
+const morningReminderTimeInput = document.getElementById('morningReminderTimeInput');
+const snoozeDurationSelect = document.getElementById('snoozeDurationSelect');
+const workingDaysContainer = document.getElementById('workingDaysContainer');
+const saveSettingsBtn = document.getElementById('saveSettingsBtn');
+const settingsSavedIndicator = document.getElementById('settingsSavedIndicator');
+
+// DOM Elements - Warning Banner
+const timesheetWarningBanner = document.getElementById('timesheetWarningBanner');
+const warningLoggedTime = document.getElementById('warningLoggedTime');
+const dismissWarningBtn = document.getElementById('dismissWarningBtn');
+
+// Settings state
+let currentSettings = {
+  reminderEnabled: true,
+  dailyTargetMinutes: 390, // 6h 30m
+  alertTimes: ['17:00', '17:30', '18:00'],
+  persistentNotification: true,
+  snoozeDurationMinutes: 10,
+  workingDays: [1, 2, 3, 4, 5],
+  morningReminderEnabled: true,
+  morningReminderTime: '09:00'
+};
+
+// Settings Event Listeners
+if (addAlertTimeBtn) addAlertTimeBtn.addEventListener('click', addAlertTime);
+if (saveSettingsBtn) saveSettingsBtn.addEventListener('click', saveSettings);
+if (dismissWarningBtn) dismissWarningBtn.addEventListener('click', () => {
+  timesheetWarningBanner.classList.add('hidden');
+  // Remember dismissal for this session
+  sessionStorage.setItem('warningDismissed', 'true');
+});
+
+/**
+ * Load settings from chrome.storage.sync
+ */
+function loadSettings() {
+  chrome.storage.sync.get([
+    'reminderEnabled', 'dailyTargetMinutes', 'alertTimes',
+    'persistentNotification', 'snoozeDurationMinutes', 'workingDays',
+    'morningReminderEnabled', 'morningReminderTime'
+  ], (result) => {
+    // Merge with defaults
+    if (result.reminderEnabled !== undefined) currentSettings.reminderEnabled = result.reminderEnabled;
+    if (result.dailyTargetMinutes !== undefined) currentSettings.dailyTargetMinutes = result.dailyTargetMinutes;
+    if (result.alertTimes !== undefined) currentSettings.alertTimes = result.alertTimes;
+    if (result.persistentNotification !== undefined) currentSettings.persistentNotification = result.persistentNotification;
+    if (result.snoozeDurationMinutes !== undefined) currentSettings.snoozeDurationMinutes = result.snoozeDurationMinutes;
+    if (result.workingDays !== undefined) currentSettings.workingDays = result.workingDays;
+    if (result.morningReminderEnabled !== undefined) currentSettings.morningReminderEnabled = result.morningReminderEnabled;
+    if (result.morningReminderTime !== undefined) currentSettings.morningReminderTime = result.morningReminderTime;
+
+    applySettingsToUI();
+  });
+}
+
+/**
+ * Apply current settings values to the UI controls
+ */
+function applySettingsToUI() {
+  if (reminderEnabledToggle) reminderEnabledToggle.checked = currentSettings.reminderEnabled;
+  if (persistentNotifToggle) persistentNotifToggle.checked = currentSettings.persistentNotification;
+  if (morningReminderToggle) morningReminderToggle.checked = currentSettings.morningReminderEnabled;
+  
+  // Snooze duration
+  if (snoozeDurationSelect) snoozeDurationSelect.value = String(currentSettings.snoozeDurationMinutes);
+  
+  // Target hours/minutes
+  const hours = Math.floor(currentSettings.dailyTargetMinutes / 60);
+  const minutes = currentSettings.dailyTargetMinutes % 60;
+  if (targetHoursInput) targetHoursInput.value = hours;
+  if (targetMinutesInput) targetMinutesInput.value = minutes;
+  
+  // Morning reminder time
+  if (morningReminderTimeInput) morningReminderTimeInput.value = currentSettings.morningReminderTime;
+  
+  // Working days checkboxes
+  if (workingDaysContainer) {
+    const checkboxes = workingDaysContainer.querySelectorAll('input[type="checkbox"]');
+    checkboxes.forEach(cb => {
+      cb.checked = currentSettings.workingDays.includes(parseInt(cb.value));
+    });
+  }
+  
+  // Alert time chips
+  renderAlertTimeChips();
+}
+
+/**
+ * Render alert time chips
+ */
+function renderAlertTimeChips() {
+  if (!alertTimeChipsContainer) return;
+  alertTimeChipsContainer.innerHTML = '';
+  
+  // Sort times chronologically
+  const sortedTimes = [...currentSettings.alertTimes].sort();
+  
+  sortedTimes.forEach(time => {
+    const chip = document.createElement('div');
+    chip.className = 'alert-time-chip';
+    
+    // Format time for display (e.g., "17:00" -> "5:00 PM")
+    const displayTime = formatAlertTime(time);
+    
+    chip.innerHTML = `
+      <span>${displayTime}</span>
+      <button class="chip-remove-btn" title="Remove">&times;</button>
+    `;
+    
+    chip.querySelector('.chip-remove-btn').addEventListener('click', () => {
+      removeAlertTime(time);
+    });
+    
+    alertTimeChipsContainer.appendChild(chip);
+  });
+  
+  // Show placeholder if no chips
+  if (sortedTimes.length === 0) {
+    const placeholder = document.createElement('div');
+    placeholder.className = 'settings-row-desc';
+    placeholder.style.fontStyle = 'italic';
+    placeholder.textContent = 'No alert times configured';
+    alertTimeChipsContainer.appendChild(placeholder);
+  }
+}
+
+/**
+ * Format 24h time string to 12h display
+ */
+function formatAlertTime(timeStr) {
+  const [h, m] = timeStr.split(':').map(Number);
+  const ampm = h >= 12 ? 'PM' : 'AM';
+  const displayH = h % 12 || 12;
+  return `${displayH}:${String(m).padStart(2, '0')} ${ampm}`;
+}
+
+/**
+ * Add a new alert time
+ */
+function addAlertTime() {
+  if (!newAlertTimeInput) return;
+  const timeVal = newAlertTimeInput.value;
+  
+  if (!timeVal) {
+    showToast('Please select a time', 'error');
+    return;
+  }
+  
+  if (currentSettings.alertTimes.includes(timeVal)) {
+    showToast('This time is already added', 'error');
+    return;
+  }
+  
+  currentSettings.alertTimes.push(timeVal);
+  renderAlertTimeChips();
+  showToast(`Alert added for ${formatAlertTime(timeVal)}`, 'success');
+  saveSettings();
+}
+
+/**
+ * Remove an alert time
+ */
+function removeAlertTime(time) {
+  currentSettings.alertTimes = currentSettings.alertTimes.filter(t => t !== time);
+  renderAlertTimeChips();
+  showToast(`Alert removed for ${formatAlertTime(time)}`, 'info');
+  saveSettings();
+}
+
+/**
+ * Save settings to chrome.storage.sync and notify background worker
+ */
+function saveSettings() {
+  // Read values from UI
+  currentSettings.reminderEnabled = reminderEnabledToggle ? reminderEnabledToggle.checked : true;
+  currentSettings.persistentNotification = persistentNotifToggle ? persistentNotifToggle.checked : true;
+  currentSettings.morningReminderEnabled = morningReminderToggle ? morningReminderToggle.checked : true;
+  
+  // Snooze duration
+  currentSettings.snoozeDurationMinutes = snoozeDurationSelect ? parseInt(snoozeDurationSelect.value, 10) : 10;
+  
+  // Target
+  const hours = parseInt(targetHoursInput?.value || '6', 10);
+  const minutes = parseInt(targetMinutesInput?.value || '30', 10);
+  currentSettings.dailyTargetMinutes = (hours * 60) + minutes;
+  
+  // Morning reminder time
+  currentSettings.morningReminderTime = morningReminderTimeInput?.value || '09:00';
+  
+  // Working days
+  if (workingDaysContainer) {
+    const checkboxes = workingDaysContainer.querySelectorAll('input[type="checkbox"]:checked');
+    currentSettings.workingDays = Array.from(checkboxes).map(cb => parseInt(cb.value));
+  }
+  
+  // Save to storage
+  chrome.storage.sync.set({
+    reminderEnabled: currentSettings.reminderEnabled,
+    dailyTargetMinutes: currentSettings.dailyTargetMinutes,
+    alertTimes: currentSettings.alertTimes,
+    persistentNotification: currentSettings.persistentNotification,
+    snoozeDurationMinutes: currentSettings.snoozeDurationMinutes,
+    workingDays: currentSettings.workingDays,
+    morningReminderEnabled: currentSettings.morningReminderEnabled,
+    morningReminderTime: currentSettings.morningReminderTime
+  }, () => {
+    // Show saved indicator
+    if (settingsSavedIndicator) {
+      settingsSavedIndicator.classList.remove('hidden');
+      setTimeout(() => {
+        settingsSavedIndicator.classList.add('hidden');
+      }, 2000);
+    }
+    
+    showToast('Settings saved successfully', 'success');
+    
+    // Notify background worker to update alarms
+    chrome.runtime.sendMessage({ action: 'updateAlarms', settings: currentSettings });
+  });
+}
+
+// ==========================================
+// WARNING BANNER LOGIC
+// ==========================================
+
+/**
+ * Check today's logged time and show warning banner if below target
+ * Accounts for active timer time (both running and paused)
+ */
+async function checkAndShowWarningBanner() {
+  // Don't show if already dismissed this session
+  if (sessionStorage.getItem('warningDismissed') === 'true') return;
+  
+  // Only show on dashboard tab and today's date range
+  const currentTab = localStorage.getItem('activeTab') || 'dashboard';
+  if (currentTab !== 'dashboard') return;
+  
+  // Load settings first
+  const settings = await new Promise(resolve => {
+    chrome.storage.sync.get(['dailyTargetMinutes', 'reminderEnabled', 'workingDays'], (result) => {
+      resolve({
+        dailyTargetMinutes: result.dailyTargetMinutes || 390,
+        reminderEnabled: result.reminderEnabled !== undefined ? result.reminderEnabled : true,
+        workingDays: result.workingDays || [1, 2, 3, 4, 5]
+      });
+    });
+  });
+  
+  // Check if reminders are enabled
+  if (!settings.reminderEnabled) return;
+  
+  // Check if today is a working day
+  const today = new Date();
+  const dayOfWeek = today.getDay(); // 0=Sun, 1=Mon, ...
+  if (!settings.workingDays.includes(dayOfWeek)) return;
+  
+  try {
+    // Get logged time from Jira
+    const todayResult = await window.JiraAPI.fetchTodayTotalSeconds();
+    if (!todayResult) return;
+    
+    let totalSeconds = todayResult.totalSeconds;
+    
+    // Add active timer time (both running and paused)
+    if (activeTimers) {
+      Object.values(activeTimers).forEach(timer => {
+        let timerMs = timer.accumulatedMs || 0;
+        if (timer.currentState === 'running' && timer.lastStarted) {
+          timerMs += Date.now() - timer.lastStarted;
+        }
+        totalSeconds += Math.floor(timerMs / 1000);
+      });
+    }
+    
+    const targetSeconds = settings.dailyTargetMinutes * 60;
+    
+    if (totalSeconds < targetSeconds) {
+      // Format the logged time
+      const hours = Math.floor(totalSeconds / 3600);
+      const minutes = Math.floor((totalSeconds % 3600) / 60);
+      const formattedTime = `${hours}h ${minutes}m`;
+      
+      if (warningLoggedTime) warningLoggedTime.textContent = formattedTime;
+      if (timesheetWarningBanner) timesheetWarningBanner.classList.remove('hidden');
+    } else {
+      // Target met, hide banner
+      if (timesheetWarningBanner) timesheetWarningBanner.classList.add('hidden');
+    }
+  } catch (error) {
+    console.error('Error checking warning banner:', error);
+  }
 }
 
 // Initialize application

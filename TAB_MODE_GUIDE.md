@@ -63,7 +63,8 @@ chrome-extension://[extension-id]/popup.html?mode=tab
 - ✅ Full viewport height for better scrolling
 - ✅ Per-day breakdown view with more space
 - ✅ Clickable issue links work in tab mode
-- ✅ All popup features available
+- ✅ All popup features available (Dashboard, Assigned Tasks, Timers, Enter Time, Settings)
+- ✅ Theme toggle works in tab mode
 
 ## Future Enhancements
 

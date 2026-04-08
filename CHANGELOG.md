@@ -2,9 +2,92 @@
 
 All notable changes to the Jira Timesheet Dashboard extension will be documented in this file.
 
+---
+
+## [1.3.0] - April 8, 2026
+
+### New Features
+
+- ✅ **Settings Tab**: New dedicated tab to configure all reminder and notification settings
+- ✅ **Daily Target**: Set your daily time goal (default: 6h 30m)
+- ✅ **Reminder Times**: Configure multiple alert times (e.g., 5:00 PM, 5:30 PM, 6:00 PM)
+- ✅ **Persistent Notifications**: Keep reminder notifications on screen until dismissed
+- ✅ **Snooze Functionality**: Snooze reminders for a configurable duration
+- ✅ **Working Days**: Choose which days of the week to receive reminders
+- ✅ **Morning Reminder**: Get a friendly reminder at a set time each morning
+- ✅ **Warning Banner**: Visual alert on dashboard when logged time is below daily target
+- ✅ **Background Service Worker**: Full alarm-based notification system
+- ✅ **Timer Comments**: Add work notes directly to timers
+- ✅ **Timer Transfer**: Send all timed entries directly to Enter Time tab
+- ✅ **Toast Notifications**: Success/error/info toasts for user feedback
+
+### Technical
+
+- Added `alarms` and `notifications` permissions in manifest
+- Background worker handles alarm scheduling and notification display
+- Settings persisted in `chrome.storage.sync`
+- Timer state persisted in `chrome.storage.local`
+- Notification button handlers for snooze and open actions
+- Working day detection for smart reminder skipping
+
+### Bug Fixes
+
+- ✅ Timer time validation prevents errors for times < 1 minute
+- ✅ Search input field size fixed in Assigned Tasks
+- ✅ Proper handling of empty timer transfers to Enter Time
+
+---
+
+## [1.2.1] - March 10, 2026
+
+### New Features & Enhancements
+
+- ✅ **Timer Undo**: Added a reset icon to the custom time picker in the Timers tab to revert to current time.
+- ✅ **Assigned Tasks Improvements**: Split the "Updated" column into separate Date and Time for better readability.
+- ✅ **UI Refinements**:
+    - Unified hover effects for issues and associated comments.
+    - Equal width distribution for navigation tabs.
+    - Improved "day-total" row visibility in dark mode.
+    - Increased font size and padding for date headers.
+    - Prevented "Issue Key" header text wrapping.
+
+### Bug Fixes
+
+- ✅ **Timer Validation**: Prevented internal errors when logging time less than 1 minute.
+- ✅ **Assigned Tasks UI**: Fixed search input field size after UI updates.
+
+---
+
+### [1.2.0] - March 9, 2026
+
+#### New Features & Enhancements
+
+- ✅ **Work Timers**: Added a dedicated tab to start, stop, and manage multiple timers for Jira issues.
+- ✅ **Assigned Tasks View**: New tab to view all tasks assigned to you with status filtering and search.
+- ✅ **Theme Support**: Added Light and Dark mode support with a theme toggle.
+- ✅ **Time Selection UI**: Added a custom time picker (hours, minutes, AM/PM) in the "Enter Time" tab.
+- ✅ **Dashboard Improvements**: Issues now sort in ascending order of time, displaying start times.
+- ✅ **Tab State Preservation**: Extension remembers your active tab across refreshes.
+- ✅ **Better Input Fields**: Comment field spans full-width with 3 rows.
+- ✅ **Updated Formatting**: Assigned Tasks now display dates in `dd/mm/yyyy` format.
+
+#### Technical
+
+- Refactored API logic into `jiraAPI.js` service layer.
+- Implemented timer state persistence in `chrome.storage`.
+- Added CSS variables for theme support and polished UI.
+
+#### Bug Fixes
+
+- ✅ **Task Links**: Middle-clicking an issue number correctly opens it in a new tab.
+- ✅ **UI Fixes**: Corrected display of Assigned Tasks and removed unnecessary alerts in standalone tabs.
+
+---
+
 ## [1.1.0] - February 17, 2026
 
 ### New Features
+
 - ✅ **Tab Mode**: Open extension in a full browser tab for more space
 - ✅ **Open in Tab Button**: Click ⇱ button in popup to open in new tab
 - ✅ **Keyboard Shortcut**: Press Ctrl+Shift+J (Cmd+Shift+J on Mac) to open in tab
@@ -13,6 +96,7 @@ All notable changes to the Jira Timesheet Dashboard extension will be documented
 - ✅ **Per-Day Breakdown**: View worklogs grouped by date for better tracking
 
 ### Technical
+
 - Added `commands` API support in manifest
 - Enhanced background service worker with keyboard command handler
 - Dynamic layout switching between popup and tab modes
@@ -20,11 +104,14 @@ All notable changes to the Jira Timesheet Dashboard extension will be documented
 - Issue click handler with direct Jira navigation
 - Date-grouped worklog display with collapsible sections
 
+---
+
 ## [1.0.0] - January 2026
 
 ### Initial Release
 
 #### Features
+
 - ✅ View worklogs for Today, This Week, This Month, or Custom Date Range
 - ✅ Display total time logged across all issues
 - ✅ Show time spent per individual issue
@@ -36,6 +123,7 @@ All notable changes to the Jira Timesheet Dashboard extension will be documented
 - ✅ Date validation and range checking
 
 #### Technical
+
 - Chrome Extension Manifest V3
 - Service Worker background script
 - Jira REST API v3 integration
@@ -45,6 +133,7 @@ All notable changes to the Jira Timesheet Dashboard extension will be documented
 - Efficient worklog filtering and aggregation
 
 #### UI/UX
+
 - Gradient header with Jira blue theme
 - Responsive table with hover effects
 - Scrollable results section
@@ -53,93 +142,34 @@ All notable changes to the Jira Timesheet Dashboard extension will be documented
 - Clear error messages
 - "No results" state handling
 
-#### Permissions
-- `activeTab` - Access current tab information
-- `storage` - Store user preferences (future use)
-- `scripting` - Execute scripts if needed
-- `host_permissions` - Access to `*.atlassian.net`
-
-### Known Limitations
-- Week start day hardcoded to Sunday
-- No CSV export functionality (planned)
-- No dark mode (planned)
-- Requires active Jira Cloud session
-
----
-
-## [1.2.1] - March 10, 2026
-
-#### New Features & Enhancements
-- ✅ **Timer Undo**: Added a reset icon to the custom time picker in the Timers tab to revert to current time.
-- ✅ **Assigned Tasks Improvements**: Split the "Updated" column into separate Date and Time for better readability.
-- ✅ **UI Refinements**:
-    - Unified hover effects for issues and associated comments.
-    - Equal width distribution for navigation tabs.
-    - Improved "day-total" row visibility in dark mode.
-    - Increased font size and padding for date headers.
-    - Prevented "Issue Key" header text wrapping.
-
-#### Bug Fixes
-- ✅ **Timer Validation**: Prevented internal errors when logging time less than 1 minute.
-- ✅ **Assigned Tasks UI**: Fixed search input field size after UI updates.
-
----
-
-### [1.2.0] - March 9, 2026
-
-#### New Features & Enhancements
-- ✅ **Work Timers**: Added a dedicated tab to start, stop, and manage multiple timers for Jira issues.
-- ✅ **Assigned Tasks View**: New tab to view all tasks assigned to you with status filtering and search.
-- ✅ **Theme Support**: Added Light and Dark mode support with a theme toggle.
-- ✅ **Time Selection UI**: Added a custom time picker (hours, minutes, AM/PM) in the "Enter Time" tab.
-- ✅ **Dashboard Improvements**: Issues now sort in ascending order of time, displaying start times.
-- ✅ **Tab State Preservation**: Extension remembers your active tab across refreshes.
-- ✅ **Better Input Fields**: Comment field spans full-width with 3 rows.
-- ✅ **Updated Formatting**: Assigned Tasks now display dates in `dd/mm/yyyy` format.
-
-#### Technical
-- Refactored API logic into `jiraAPI.js` service layer.
-- Implemented timer state persistence in `chrome.storage`.
-- Added CSS variables for theme support and polished UI.
-
-#### Bug Fixes
-- ✅ **Task Links**: Middle-clicking an issue number correctly opens it in a new tab.
-- ✅ **UI Fixes**: Corrected display of Assigned Tasks and removed unnecessary alerts in standalone tabs.
-
 ---
 
 ## Future Releases
 
-### [1.3.0] - Planned
-
-#### Features
-- [ ] CSV export functionality
-- [ ] Group by project option
-- [ ] Search/filter within results
-- [ ] Time range comparison view
-
-#### Enhancements
-- [ ] Configurable week start day (Sunday/Monday)
-- [ ] Save last selected date range preference
-- [ ] Better error messages with recovery suggestions
-- [ ] Toggle between summary and per-day views
-
 ### [1.4.0] - Planned
 
 #### Features
+
 - [ ] CSV export functionality
-- [ ] Per-day breakdown view
 - [ ] Group by project option
-- [ ] Search/filter within results
+- [ ] Search/filter within dashboard results
+- [ ] Time range comparison view
+
+#### Enhancements
+
+- [ ] Configurable week start day (currently Monday)
+- [ ] Save last selected date range preference
+- [ ] Better error messages with recovery suggestions
 
 ### [2.0.0] - Future
 
 #### Major Features
+
 - [ ] Charts and visualizations
-- [ ] Dark mode theme
 - [ ] Multiple Jira instance support
 - [ ] Offline caching
 - [ ] Browser sync for preferences
+- [ ] Export to PDF/Excel
 
 ---
 
@@ -147,8 +177,9 @@ All notable changes to the Jira Timesheet Dashboard extension will be documented
 
 | Version | Release Date | Key Features |
 |---------|--------------|--------------|
+| 1.3.0   | Apr 8, 2026  | Settings tab, Daily reminders, Morning reminders, Warning banner, Alarm system |
 | 1.2.1   | Mar 10, 2026 | Timer Undo, Split Date/Time in Assigned Tasks, UI refinements, Bug fixes |
-| 1.2.0   | Mar 9, 2026  | Time selection UI, Tab state preservation, Dashboard sorting, UI fixes |
+| 1.2.0   | Mar 9, 2026  | Work Timers, Assigned Tasks, Theme toggle, Time picker, Tab state preservation |
 | 1.1.0   | Feb 17, 2026 | Tab mode, keyboard shortcuts, clickable issues, per-day breakdown |
 | 1.0.0   | Jan 2026     | Initial release with core functionality |
 
@@ -156,15 +187,25 @@ All notable changes to the Jira Timesheet Dashboard extension will be documented
 
 ## Upgrade Notes
 
-### From 0.x to 1.0.0
-- First stable release
-- No migration needed
+### From 1.2.x to 1.3.0
+
+- New Settings tab available for configuring reminders
+- Background service worker now handles alarm scheduling
+- First-time setup will prompt for notification permissions
+- Previous timer and preference data is preserved
+
+### From 1.0.x to 1.2.0
+
+- New tabs added (Timers, Assigned Tasks, Enter Time)
+- Theme preference saved
+- Tab state now preserved across sessions
 
 ---
 
 ## Contributing
 
 To suggest features or report bugs:
+
 1. Test thoroughly using TESTING.md checklist
 2. Document the issue with steps to reproduce
 3. Include Chrome version and Jira instance details
@@ -173,6 +214,7 @@ To suggest features or report bugs:
 ---
 
 **Semantic Versioning:** This project follows [SemVer](https://semver.org/)
-- MAJOR version for incompatible API changes
-- MINOR version for new functionality (backwards compatible)
-- PATCH version for backwards compatible bug fixes
+
+- **MAJOR** version for incompatible API changes
+- **MINOR** version for new functionality (backwards compatible)
+- **PATCH** version for backwards compatible bug fixes

@@ -8,15 +8,18 @@ A Chrome Extension that displays your logged work hours in Jira Cloud with custo
 - ✅ See total time per issue and overall total
 - ✅ Per-day breakdown view with date grouping
 - ✅ Dashboard sorted by chronological order with start times
-- ✅ **Work Timers**: Start/stop timers for issues with custom time picking and **Undo/Reset functionality**
-- ✅ **Assigned Tasks View**: See all tasks assigned to you with status filtering and separate Date/Time columns
-- ✅ **Theme Support**: Toggle between Light and Dark modes with optimized row visibility
-- ✅ Custom time selection UI for logging work with a full-width comment field
+- ✅ **Work Timers**: Start/stop multiple timers for issues with custom time picking
+- ✅ **Assigned Tasks View**: See all tasks assigned to you with status filtering and search
+- ✅ **Enter Time**: Log work directly to Jira issues with date/time selection
+- ✅ **Settings**: Configure daily reminders, target hours, alert times, and working days
+- ✅ **Daily Reminders**: Get notified when you haven't met your daily time target
+- ✅ **Morning Reminders**: Start your day with a friendly reminder
+- ✅ **Warning Banner**: Visual alert when logged time is below target
+- ✅ **Theme Support**: Toggle between Light and Dark modes
 - ✅ Clickable issue links - open issues directly in Jira (supports middle-click for new tab)
 - ✅ Remembers your active tab state across refreshes
 - ✅ Uses existing Jira session (no API token required)
 - ✅ Clean, responsive UI with loading states and `dd/mm/yyyy` formatted dates
-- ✅ Pagination support for large datasets
 - ✅ Open in popup or full tab mode
 - ✅ Keyboard shortcut support (Ctrl+Shift+J / Cmd+Shift+J)
 - ✅ Production-ready and modular code
@@ -50,7 +53,7 @@ A Chrome Extension that displays your logged work hours in Jira Cloud with custo
 2. **Click the extension icon** in your Chrome toolbar
 3. **Select a date range**:
    - Today
-   - This Week (Sunday to Today)
+   - This Week (Monday to Today)
    - This Month (1st to Today)
    - Custom Range (select start and end dates)
 4. **Click "Load"** to fetch your worklogs
@@ -70,6 +73,47 @@ Open the extension in a full browser tab for more space:
    - Mac: `Cmd+Shift+J`
 3. The extension opens in a new tab with full-screen layout
 
+### Timers Tab
+
+Track time spent on tasks with built-in stopwatches:
+
+1. **Select a task** from the dropdown (populated from your assigned tasks)
+2. **Set start time** (defaults to current time, or pick a custom time)
+3. **Click "Add Timer"** to create the timer (starts automatically)
+4. **Start/Stop** - Click ▶/⏸ to control the timer
+5. **Add comments** - Track what you're working on
+6. **Send to Entry** - When done, send all timer data to the Enter Time tab
+
+### Enter Time Tab
+
+Log work directly to Jira issues:
+
+1. **Add rows** for each time entry
+2. **Select a task** from your assigned tasks
+3. **Pick date and time** using the date picker and time selector
+4. **Enter time spent** (e.g., "1h 30m" or "45m")
+5. **Add comments** (optional)
+6. **Submit All** - Logs all entries to Jira
+
+### Settings Tab
+
+Configure reminders and daily targets:
+
+1. **Daily Target**: Set your target hours/minutes (default: 6h 30m)
+2. **Reminder Times**: Add times to get reminded (e.g., 5:00 PM, 5:30 PM)
+3. **Persistent Notifications**: Keep reminder on screen until dismissed
+4. **Snooze Duration**: Set how long to wait before reminding again
+5. **Working Days**: Choose which days to receive reminders
+6. **Morning Reminder**: Get a friendly reminder to start logging
+7. **Save Settings** - Changes take effect immediately
+
+### Theme Toggle
+
+Switch between light and dark modes:
+
+- Click the theme icon in the top-right of the popup
+- Theme preference is saved and persists across sessions
+
 ## File Structure
 
 ```
@@ -79,9 +123,10 @@ jira-timesheet-dashboard/
 ├── popup.js              # Main logic and UI controllers
 ├── jiraAPI.js            # Jira REST API service layer
 ├── styles.css            # Styling (Light/Dark mode support)
-├── background.js         # Service worker for background tasks
+├── background.js         # Service worker for alarms and notifications
 ├── icons/
 │   └── icon.png         # Extension icon
+├── create-icon.html      # Icon generator tool
 └── README.md            # This file
 ```
 
@@ -142,7 +187,7 @@ The code is structured to support:
 - Group by Project
 - Dark mode theme
 - Saved filter preferences
-- Configurable week start day (Sunday/Monday)
+- Configurable week start day (currently Monday)
 - Time range comparison view
 
 ## Development

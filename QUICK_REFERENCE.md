@@ -21,13 +21,31 @@
 
 ### Use Work Timers
 1. Click the **Timers** tab
-2. Enter an issue key and click **+ Add Timer**
-3. Click **Start** to track time
-4. Use the **Reset/Undo icon** to revert custom time selection to the current time
+2. Select a task from the dropdown
+3. Optionally set custom start time
+4. Click **Add Timer** (starts automatically)
+5. Click ▶/⏸ to start/stop
+6. Add comments as needed
+7. Click **Send to Entry** to log time
 
-### View Assigned Tasks
-1. Click the **Assigned Tasks** tab
-2. Use the search bar or status filter to find tasks
+### Log Time to Jira
+1. Click the **Enter Time** tab
+2. Click **Add Row** for each entry
+3. Select task, date, time, and duration
+4. Add comments (optional)
+5. Click **Submit All**
+
+### Configure Reminders
+1. Click the **Settings** tab
+2. Set daily target hours/minutes
+3. Add/remove reminder times
+4. Toggle morning reminder
+5. Select working days
+6. Click **Save Settings**
+
+### Toggle Theme
+- Click the moon/sun icon in the top-right
+- Theme persists across sessions
 
 ## Keyboard Shortcuts
 
@@ -41,7 +59,9 @@
 | Option | Start Date | End Date |
 |--------|-----------|----------|
 | Today | Today | Today |
-| This Week | Sunday | Today |
+| Yesterday | Yesterday | Yesterday |
+| This Week | Monday | Today |
+| Last Week | Monday of last week | Sunday of last week |
 | This Month | 1st of month | Today |
 | Custom Range | Your choice | Your choice |
 
@@ -70,17 +90,18 @@ Examples:
 - Pin the extension to toolbar for quick access
 - Use "This Week" for weekly reviews
 - Use "This Month" for monthly reports
-- Custom range for specific project periods
+- Use Timers to track time as you work
+- Send timers to Enter Time to log all at once
 
 ### Troubleshooting Quick Fixes
 1. **Extension not working?**
    - Refresh Jira page
    - Reload extension in chrome://extensions/
-   
+
 2. **Wrong data showing?**
    - Verify you're logged into correct Jira account
    - Check date range selection
-   
+
 3. **Slow loading?**
    - Large date ranges take longer
    - Many issues (>100) require pagination
@@ -97,12 +118,12 @@ Examples:
 
 ```
 jira-timesheet-dashboard/
-├── manifest.json       # Extension config
-├── popup.html         # UI structure
-├── popup.js           # UI logic
-├── jiraAPI.js         # API service layer
-├── styles.css         # Styling (Dark mode support)
-├── background.js      # Service worker
+├── manifest.json       # Extension config (V3)
+├── popup.html          # UI structure
+├── popup.js            # UI logic (~1,900 lines)
+├── jiraAPI.js          # API service layer
+├── styles.css          # Styling (Light/Dark mode)
+├── background.js       # Service worker (alarms/notifications)
 └── icons/icon.png     # Extension icon
 ```
 
@@ -124,8 +145,10 @@ worklogDate >= START_DATE AND worklogDate <= END_DATE AND worklogAuthor = curren
 ## Permissions Explained
 
 - **activeTab** - Know which tab is active
-- **storage** - Save preferences (future use)
+- **storage** - Save preferences and settings
 - **scripting** - Run scripts if needed
+- **alarms** - Schedule background reminders
+- **notifications** - Show desktop notifications
 - **host_permissions** - Access Jira API
 
 ## Browser Support
@@ -153,7 +176,7 @@ worklogDate >= START_DATE AND worklogDate <= END_DATE AND worklogAuthor = curren
 ## Limitations
 
 - Requires active Jira Cloud session
-- Week starts on Sunday (not configurable yet)
+- Week starts on Monday (not configurable yet)
 - No offline mode
 - No CSV export (yet)
 - No charts/visualizations (yet)
@@ -180,7 +203,7 @@ worklogDate >= START_DATE AND worklogDate <= END_DATE AND worklogAuthor = curren
 
 ## Version Info
 
-**Current Version:** 1.2.1  
+**Current Version:** 1.3.0  
 **Manifest Version:** 3  
 **Minimum Chrome:** 88+
 
