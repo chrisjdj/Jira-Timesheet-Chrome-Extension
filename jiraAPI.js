@@ -290,8 +290,41 @@ const JiraAPI = {
     }
     
     return true;
+  },
+
+  /**
+   * Fetch total seconds logged today (lightweight check for notifications)
+   * Returns { totalSeconds: number, formatted: string } or null if unable to fetch
+   */
+  async fetchTodayTotalSeconds() {
+    try {
+      const baseUrl = await this.getBaseUrl();
+      const currentUser = await this.getCurrentUser();
+      
+      const today = new Date();
+      const year = today.getFullYear();
+      const month = String(today.getMonth() + 1).padStart(2, '0');
+      const day = String(today.getDate()).padStart(2, '0');
+      const todayStr = `${year}-${month}-${day}`;
+      
+      const worklogs = await this.fetchWorklogs(todayStr, todayStr);
+      
+      let totalSeconds = 0;
+      for (const worklog of worklogs) {
+        totalSeconds += worklog.timeSpentSeconds;
+      }
+      
+      const hours = Math.floor(totalSeconds / 3600);
+      const minutes = Math.floor((totalSeconds % 3600) / 60);
+      const formatted = `${hours}h ${minutes}m`;
+      
+      return { totalSeconds, formatted };
+    } catch (error) {
+      return null;
+    }
   }
 };
 
 // Expose to global scope for popup.js to use
 window.JiraAPI = JiraAPI;
+

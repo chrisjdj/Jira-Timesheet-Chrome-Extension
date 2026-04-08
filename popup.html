@@ -14,6 +14,7 @@
         <button id="refreshBtn" class="refresh-btn" title="Refresh data">⟳</button>
         <button id="themeToggleBtn" class="theme-btn" title="Toggle dark theme">🌓</button>
         <button id="openInTabBtn" class="open-tab-btn" title="Open in new tab">⇱</button>
+        <button id="settingsBtn" class="settings-btn" title="Settings">⚙</button>
       </div>
     </header>
 
@@ -27,6 +28,26 @@
     </div>
 
     <div id="dashboard" class="tab-content active">
+      <div id="updateBanner" class="update-banner hidden">
+      <div class="update-banner-header">
+        <div class="update-banner-title">🔄 Update Available</div>
+        <div class="update-banner-message">Version <span id="remoteVersion"></span> is available. You're on <span id="localVersion"></span>. <button id="viewReleaseNotesBtn" class="view-release-notes-btn hidden">View changelog</button></div>
+      </div>
+      <div class="update-banner-actions">
+        <button id="updateBtn" class="update-btn">Download Update</button>
+        <button id="dismissUpdateBtn" class="update-dismiss-btn" title="Dismiss">&times;</button>
+      </div>
+      <div id="updateReleaseNotes" class="update-release-notes hidden"></div>
+    </div>
+
+    <div id="timesheetWarningBanner" class="warning-banner hidden">
+        <div class="warning-banner-icon">⚠️</div>
+        <div class="warning-banner-content">
+          <div class="warning-banner-title">Daily time target not met</div>
+          <div class="warning-banner-message" id="warningBannerMessage">You've only logged <strong id="warningLoggedTime">0h 0m</strong> today. Don't forget to log the remaining time.</div>
+        </div>
+        <button id="dismissWarningBtn" class="warning-banner-dismiss" title="Dismiss">&times;</button>
+      </div>
       <div class="filter-section">
         <div class="filter-group">
           <label for="dateRange">Date Range:</label>
@@ -190,6 +211,16 @@
           <!-- Dynamically populated timers go here -->
         </div>
 
+        <div class="timers-info-box">
+          <strong>💡 How timers work:</strong>
+          <ul>
+            <li>Select a task and optionally set a custom start time</li>
+            <li>Click "Add Timer" to start tracking (one timer per task)</li>
+            <li>Use ▶/⏸ to pause/resume — timer continues even if popup closes</li>
+            <li>Click "Send All to Enter Time Tab" to log tracked time to Jira</li>
+          </ul>
+        </div>
+
         <div class="timers-footer">
           <button id="sendTimersToEntryBtn" class="load-btn hidden">Send All to Enter Time Tab</button>
         </div>
@@ -220,6 +251,121 @@
       </div>
     </div>
 
+    <div id="settings" class="tab-content">
+      <div class="settings-section">
+        <h3 class="settings-group-title">🔔 Daily Reminders</h3>
+        <div class="settings-card">
+          <div class="settings-row">
+            <div class="settings-row-info">
+              <div class="settings-row-label">Enable Reminders</div>
+              <div class="settings-row-desc">Get notified when your daily time target isn't met</div>
+            </div>
+            <label class="toggle-switch">
+              <input type="checkbox" id="reminderEnabledToggle" checked>
+              <span class="toggle-slider"></span>
+            </label>
+          </div>
+          <div class="settings-divider"></div>
+          <div class="settings-row">
+            <div class="settings-row-info">
+              <div class="settings-row-label">Daily Time Target</div>
+              <div class="settings-row-desc">Minimum hours to log per day</div>
+            </div>
+            <div class="target-input-group">
+              <input type="number" id="targetHours" min="0" max="12" value="6" class="target-input">
+              <span class="target-separator">h</span>
+              <input type="number" id="targetMinutes" min="0" max="59" value="30" class="target-input">
+              <span class="target-separator">m</span>
+            </div>
+          </div>
+          <div class="settings-divider"></div>
+          <div class="settings-row">
+            <div class="settings-row-info">
+              <div class="settings-row-label">Persistent Notifications</div>
+              <div class="settings-row-desc">Notifications stay until you dismiss them</div>
+            </div>
+            <label class="toggle-switch">
+              <input type="checkbox" id="persistentNotifToggle" checked>
+              <span class="toggle-slider"></span>
+            </label>
+          </div>
+          <div class="settings-divider"></div>
+          <div class="settings-row">
+            <div class="settings-row-info">
+              <div class="settings-row-label">Snooze Duration</div>
+              <div class="settings-row-desc">How long to wait when you snooze a reminder</div>
+            </div>
+            <select id="snoozeDurationSelect" class="snooze-select">
+              <option value="5">5 min</option>
+              <option value="10" selected>10 min</option>
+              <option value="15">15 min</option>
+              <option value="20">20 min</option>
+              <option value="25">25 min</option>
+              <option value="30">30 min</option>
+            </select>
+          </div>
+          <div class="settings-divider"></div>
+          <div class="settings-row vertical">
+            <div class="settings-row-info">
+              <div class="settings-row-label">Alert Times</div>
+              <div class="settings-row-desc">Add times when you want to be reminded</div>
+            </div>
+            <div class="alert-times-container">
+              <div id="alertTimeChips" class="alert-time-chips"></div>
+              <div class="add-alert-time">
+                <input type="time" id="newAlertTimeInput" value="17:00" class="alert-time-input">
+                <button id="addAlertTimeBtn" class="action-btn add-alert-btn">+ Add</button>
+              </div>
+            </div>
+          </div>
+        </div>
+
+        <h3 class="settings-group-title">☀️ Morning Reminder</h3>
+        <div class="settings-card">
+          <div class="settings-row">
+            <div class="settings-row-info">
+              <div class="settings-row-label">Enable Morning Reminder</div>
+              <div class="settings-row-desc">Get a reminder to start logging time</div>
+            </div>
+            <label class="toggle-switch">
+              <input type="checkbox" id="morningReminderToggle" checked>
+              <span class="toggle-slider"></span>
+            </label>
+          </div>
+          <div class="settings-divider"></div>
+          <div class="settings-row">
+            <div class="settings-row-info">
+              <div class="settings-row-label">Reminder Time</div>
+              <div class="settings-row-desc">Time after which morning reminder fires</div>
+            </div>
+            <input type="time" id="morningReminderTimeInput" value="09:00" class="alert-time-input">
+          </div>
+        </div>
+
+        <h3 class="settings-group-title">📅 Working Days</h3>
+        <div class="settings-card">
+          <div class="settings-row vertical">
+            <div class="settings-row-info">
+              <div class="settings-row-desc">Reminders will only fire on selected days</div>
+            </div>
+            <div id="workingDaysContainer" class="working-days-grid">
+              <label class="day-checkbox"><input type="checkbox" value="1" checked><span>Mon</span></label>
+              <label class="day-checkbox"><input type="checkbox" value="2" checked><span>Tue</span></label>
+              <label class="day-checkbox"><input type="checkbox" value="3" checked><span>Wed</span></label>
+              <label class="day-checkbox"><input type="checkbox" value="4" checked><span>Thu</span></label>
+              <label class="day-checkbox"><input type="checkbox" value="5" checked><span>Fri</span></label>
+              <label class="day-checkbox"><input type="checkbox" value="6"><span>Sat</span></label>
+              <label class="day-checkbox"><input type="checkbox" value="0"><span>Sun</span></label>
+            </div>
+          </div>
+        </div>
+
+        <div class="settings-save-row">
+          <button id="saveSettingsBtn" class="load-btn">Save Settings</button>
+          <span id="settingsSavedIndicator" class="settings-saved-indicator hidden">✓ Saved</span>
+        </div>
+      </div>
+    </div>
 
   </div>
 

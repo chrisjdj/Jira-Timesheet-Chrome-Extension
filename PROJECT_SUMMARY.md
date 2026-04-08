@@ -2,11 +2,11 @@
 
 ## Overview
 
-A production-ready Chrome Extension (Manifest V3) that provides Jira Cloud users with a dashboard to view their logged work hours across customizable date ranges.
+A production-ready Chrome Extension (Manifest V3) that provides Jira Cloud users with a comprehensive dashboard to view, track, and log their work hours with customizable date ranges, timers, reminders, and settings.
 
 ## Project Status
 
-✅ **Complete and Ready for Use**
+✅ **Complete and Ready for Use** (v1.3.0)
 
 All requirements from the specification have been implemented and the extension is ready to be loaded as an unpacked extension in Chrome.
 
@@ -15,10 +15,10 @@ All requirements from the specification have been implemented and the extension 
 ### Core Files (Required)
 1. ✅ `manifest.json` - Extension configuration (Manifest V3)
 2. ✅ `popup.html` - User interface structure
-3. ✅ `popup.js` - Main logic and UI controllers
+3. ✅ `popup.js` - Main logic and UI controllers (~1,900 lines)
 4. ✅ `jiraAPI.js` - Jira REST API service layer
 5. ✅ `styles.css` - Complete styling with Light/Dark mode
-6. ✅ `background.js` - Service worker for background tasks
+6. ✅ `background.js` - Service worker for alarms and notifications
 7. ✅ `icons/icon.png` - Extension icon (included)
 
 ### Documentation Files
@@ -26,19 +26,14 @@ All requirements from the specification have been implemented and the extension 
 2. ✅ `INSTALLATION.md` - Step-by-step installation instructions
 3. ✅ `TESTING.md` - Comprehensive testing checklist
 4. ✅ `QUICK_REFERENCE.md` - Quick reference for common tasks
-5. ✅ `CHANGELOG.md` - Version history and future plans
+5. ✅ `CHANGELOG.md` - Version history and release notes
 6. ✅ `ICON_INSTRUCTIONS.md` - How to create the icon
 7. ✅ `create-icon.html` - Icon generator tool
 
 ## Features Implemented
 
-### Date Range Options
-- ✅ Today
-- ✅ This Week (Sunday to Today)
-- ✅ This Month (1st to Today)
-- ✅ Custom Date Range (user-selected start and end)
-
-### Data Display
+### Dashboard Tab
+- ✅ Today, This Week, This Month, Last Week, Custom Date Range
 - ✅ Total time logged (formatted as "Xh Ym")
 - ✅ Time per issue with issue key and summary
 - ✅ Per-day breakdown with date grouping
@@ -46,14 +41,48 @@ All requirements from the specification have been implemented and the extension 
 - ✅ Clickable issue links to open in Jira (supports middle-click for new tab)
 - ✅ Responsive table with scrolling
 - ✅ "No results" state handling
+- ✅ Warning banner when daily target not met
 
-### Data Entry & UI Polish
-- ✅ **Work Timers**: Start/stop timers for issues with custom time picking and **Undo/Reset functionality**
-- ✅ **Assigned Tasks**: View all tasks assigned to you with status filtering, search, and separate Date/Time columns
-- ✅ **Theme Toggle**: Switch between Light and Dark modes with optimized row visibility
-- ✅ Full-width, 3-row textarea for work descriptions/comments
-- ✅ Active tab preservation (retains view across reloads)
-- ✅ Formatted dates (`dd/mm/yyyy`) and polished UI with unified hover effects
+### Assigned Tasks Tab
+- ✅ View all tasks assigned to you
+- ✅ Status filtering (dropdown)
+- ✅ Search across all fields (key, summary, status, updated)
+- ✅ Split Date/Time columns for better readability
+- ✅ Clickable issue links
+
+### Timers Tab
+- ✅ Start/stop multiple timers simultaneously
+- ✅ Custom time picking for timer start
+- ✅ Reset to current time option
+- ✅ Add comments to each timer
+- ✅ Send all timers to Enter Time tab
+- ✅ Timer state persisted across sessions
+
+### Enter Time Tab
+- ✅ Add multiple time entry rows
+- ✅ Select task from assigned tasks dropdown
+- ✅ Date picker with custom time selection (hours, minutes, AM/PM)
+- ✅ Time spent input (e.g., "1h 30m", "45m")
+- ✅ Comment field for work description
+- ✅ Submit all entries to Jira
+- ✅ Sequential submission to avoid rate limiting
+- ✅ Results display with success/error feedback
+
+### Settings Tab
+- ✅ Daily target hours/minutes configuration
+- ✅ Reminder times management (add/remove)
+- ✅ Persistent notification toggle
+- ✅ Snooze duration selection
+- ✅ Working days checkboxes
+- ✅ Morning reminder toggle and time
+- ✅ Save with toast notification
+- ✅ Background worker notification
+
+### Theme Support
+- ✅ Light mode (default)
+- ✅ Dark mode
+- ✅ Theme toggle in UI
+- ✅ Theme persisted in storage
 
 ### API Integration
 - ✅ Jira REST API v3 (`/rest/api/3/search`)
@@ -66,17 +95,11 @@ All requirements from the specification have been implemented and the extension 
 - ✅ Loading indicators
 - ✅ Disabled states during fetch
 - ✅ Error messages with clear guidance
+- ✅ Toast notifications (success/error/info)
 - ✅ Clean, minimal Jira-inspired design
-- ✅ Responsive layout (600px width)
+- ✅ Responsive layout (600px popup, full-width tab mode)
 - ✅ Scrollable results section
-
-### Code Quality
-- ✅ Modular JavaScript structure
-- ✅ Well-commented code
-- ✅ Separation of concerns (logic vs UI)
-- ✅ XSS protection (HTML escaping)
-- ✅ Proper error handling
-- ✅ Production-ready structure
+- ✅ Active tab preservation
 
 ## Technical Specifications
 
@@ -84,12 +107,12 @@ All requirements from the specification have been implemented and the extension 
 - Chrome Extension
 - Manifest Version 3
 - Service Worker architecture
-- Popup-based UI
+- Popup-based UI with Tab Mode option
 
 ### Permissions
 ```json
 {
-  "permissions": ["activeTab", "storage", "scripting"],
+  "permissions": ["activeTab", "storage", "scripting", "alarms", "notifications"],
   "host_permissions": ["https://*.atlassian.net/*"]
 }
 ```
@@ -100,6 +123,14 @@ All requirements from the specification have been implemented and the extension 
 - **JQL:** `worklogDate >= START_DATE AND worklogDate <= END_DATE AND worklogAuthor = currentUser()`
 - **Fields:** `summary`, `worklog`
 - **Pagination:** Automatic (100 results per request)
+
+### Background Service Worker
+- Alarm-based daily reminders
+- Morning reminder scheduling
+- Working day detection
+- Desktop notifications with buttons
+- Snooze functionality
+- Today's logged time checking
 
 ### Data Processing
 1. Fetch issues matching JQL query
@@ -114,12 +145,12 @@ All requirements from the specification have been implemented and the extension 
 ```
 jira-timesheet-dashboard/
 │
-├── manifest.json              # Extension configuration
+├── manifest.json              # Extension configuration (V3)
 ├── popup.html                 # UI structure
-├── popup.js                   # Main logic (1,500+ lines)
-├── jiraAPI.js                 # API service (300+ lines)
-├── styles.css                 # Complete styling (700+ lines)
-├── background.js              # Service worker
+├── popup.js                   # Main logic (~1,900 lines)
+├── jiraAPI.js                 # API service
+├── styles.css                 # Complete styling
+├── background.js              # Service worker (alarms/notifications)
 │
 ├── icons/
 │   └── icon.png              # Extension icon
@@ -159,6 +190,9 @@ jira-timesheet-dashboard/
 - ✅ Error handling covers all cases
 - ✅ Loading states implemented
 - ✅ UI responsive and styled
+- ✅ Timer functionality works
+- ✅ Settings saved and applied
+- ✅ Notifications fire correctly
 
 ### Code Quality
 - ✅ Modular structure
@@ -174,24 +208,26 @@ jira-timesheet-dashboard/
 
 ## Known Limitations
 
-1. **Week Start Day:** Hardcoded to Sunday (configurable in future)
+1. **Week Start Day:** Hardcoded to Monday (configurable in future)
 2. **Session Required:** Must be logged into Jira Cloud
 3. **No Offline Mode:** Requires active internet connection
 4. **Chrome Only:** Not compatible with Firefox/Safari
+5. **Single Jira Instance:** Currently only works with one Jira site at a time
 
-## Future Enhancement Readiness
+## Version History
 
-The code is structured to easily support:
-- CSV export functionality
-- Charts and visualizations
-- Group by project option
-- Dark mode theme
-- Saved filter preferences
-- Configurable week start day
+| Version | Date | Key Features |
+|---------|------|--------------|
+| 1.3.0 | Apr 8, 2026 | Settings tab, Daily/Morning reminders, Warning banner, Alarm system |
+| 1.2.1 | Mar 10, 2026 | Timer Undo, Split Date/Time columns, UI refinements |
+| 1.2.0 | Mar 9, 2026 | Work Timers, Assigned Tasks, Theme support |
+| 1.1.0 | Feb 17, 2026 | Tab mode, keyboard shortcuts, per-day breakdown |
+| 1.0.0 | Jan 2026 | Initial release |
 
 ## Success Criteria
 
 ✅ All requirements from specification met:
+
 1. ✅ Runs on Jira Cloud (`*.atlassian.net`)
 2. ✅ View time for Today, Week, Month, Custom Range
 3. ✅ See total time per issue and overall
@@ -206,33 +242,10 @@ The code is structured to easily support:
 12. ✅ Clickable issue links
 13. ✅ Per-day breakdown view
 14. ✅ Keyboard shortcuts
-
-## Next Steps for User
-
-1. **Install Extension:**
-   - Follow `INSTALLATION.md`
-   - Load unpacked in Chrome
-   - Pin to toolbar
-
-2. **Test Extension:**
-   - Use `TESTING.md` checklist
-   - Verify all features work
-   - Report any issues
-
-3. **Start Using:**
-   - Open Jira Cloud
-   - Click extension icon
-   - Select date range
-   - View your worklogs!
-   - Click issues to open them in Jira
-
-## Support Resources
-
-- **Installation Help:** See `INSTALLATION.md`
-- **Usage Guide:** See `README.md`
-- **Quick Reference:** See `QUICK_REFERENCE.md`
-- **Testing:** See `TESTING.md`
-- **Debugging:** Right-click popup → Inspect
+15. ✅ Multiple timers
+16. ✅ Settings/configuration
+17. ✅ Daily reminders
+18. ✅ Warning banner
 
 ## Performance Metrics
 
@@ -254,29 +267,27 @@ The code is structured to easily support:
 ## Code Statistics
 
 - **Total Files:** 17 (9 code + 8 documentation)
-- **Lines of Code:** ~3,200+
-- **JavaScript:** ~1,900+ lines (popup.js + jiraAPI.js + background.js)
+- **Lines of Code:** ~3,500+
+- **JavaScript:** ~2,100+ lines (popup.js + jiraAPI.js + background.js)
 - **CSS:** ~1,000+ lines (styles.css)
-- **HTML:** ~250+ lines (popup.html + create-icon.html)
-- **Documentation:** ~2,000+ lines
+- **HTML:** ~300+ lines (popup.html + create-icon.html)
+- **Documentation:** ~2,500+ lines
 
 ## Compliance
 
 ✅ **Specification Compliance:** 100%
+
 - All functional requirements implemented
 - All technical requirements met
 - All UI/UX requirements satisfied
 - All code quality standards followed
 
-## Conclusion
-
-The Jira Timesheet Dashboard Chrome Extension is **complete and production-ready**. All requirements from the specification have been implemented with clean, modular, well-documented code. The extension is ready to be loaded in Chrome after adding an icon file.
-
 ---
 
 **Project Status:** ✅ COMPLETE  
+**Current Version:** 1.3.0  
 **Ready for Use:** ✅ YES  
 **Documentation:** ✅ COMPREHENSIVE  
 **Code Quality:** ✅ PRODUCTION-READY
 
-**Last Updated:** March 10, 2026
+**Last Updated:** April 8, 2026

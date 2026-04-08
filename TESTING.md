@@ -5,7 +5,7 @@ Use this checklist to verify the extension works correctly.
 ## Pre-Testing Setup
 
 - [ ] Extension installed in Chrome
-- [ ] Extension version 1.2.1 confirmed
+- [ ] Extension version 1.3.0 confirmed
 - [ ] Icon displays correctly in toolbar
 - [ ] Jira Cloud tab open and logged in
 - [ ] You have logged time in Jira (for testing)
@@ -30,7 +30,7 @@ Use this checklist to verify the extension works correctly.
 - [ ] Select "This Week" from dropdown
 - [ ] Custom date inputs are hidden
 - [ ] Click "Load" button
-- [ ] Results show worklogs from Sunday (or Monday) to today
+- [ ] Results show worklogs from Monday to today
 
 #### This Month
 - [ ] Select "This Month" from dropdown
@@ -214,7 +214,7 @@ After modifying code, re-test:
 
 Document any known issues:
 - Pagination may be slow with 1000+ issues
-- Week start day is hardcoded to Sunday
+- Week start day is hardcoded to Monday
 - No offline support
 - Requires active Jira session
 
