@@ -28,7 +28,16 @@
     </div>
 
     <div id="dashboard" class="tab-content active">
-      <div id="timesheetWarningBanner" class="warning-banner hidden">
+      <div id="updateBanner" class="update-banner hidden">
+      <div class="update-banner-content">
+        <div class="update-banner-title">🔄 Update Available</div>
+        <div class="update-banner-message">Version <span id="remoteVersion"></span> is available. You're on <span id="localVersion"></span>.</div>
+      </div>
+      <button id="updateBtn" class="update-btn">Update</button>
+      <button id="dismissUpdateBtn" class="update-dismiss-btn" title="Dismiss">&times;</button>
+    </div>
+
+    <div id="timesheetWarningBanner" class="warning-banner hidden">
         <div class="warning-banner-icon">⚠️</div>
         <div class="warning-banner-content">
           <div class="warning-banner-title">Daily time target not met</div>

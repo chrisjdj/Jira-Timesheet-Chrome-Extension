@@ -52,6 +52,16 @@ let globalTimerInterval = null;
 const themeToggleBtn = document.getElementById('themeToggleBtn');
 const refreshBtn = document.getElementById('refreshBtn');
 
+// DOM Elements - Update Banner
+const updateBanner = document.getElementById('updateBanner');
+const remoteVersionSpan = document.getElementById('remoteVersion');
+const localVersionSpan = document.getElementById('localVersion');
+const updateBtn = document.getElementById('updateBtn');
+const dismissUpdateBtn = document.getElementById('dismissUpdateBtn');
+
+const GITHUB_REPO = 'chrisjdj/Jira-Timesheet-Chrome-Extension';
+const GITHUB_API_URL = `https://api.github.com/repos/${GITHUB_REPO}/releases/latest`;
+
 // Shared State
 let cachedAssignedTasks = null;
 
@@ -85,6 +95,10 @@ if (submitAllBtn) submitAllBtn.addEventListener('click', submitAllTimeEntries);
 // Theme Listeners
 if (themeToggleBtn) themeToggleBtn.addEventListener('click', toggleTheme);
 if (refreshBtn) refreshBtn.addEventListener('click', handleRefreshClick);
+
+// Update Banner Listeners
+if (updateBtn) updateBtn.addEventListener('click', handleUpdateClick);
+if (dismissUpdateBtn) dismissUpdateBtn.addEventListener('click', dismissUpdateBanner);
 
 // Settings Listener
 const settingsBtn = document.getElementById('settingsBtn');
@@ -187,6 +201,9 @@ async function initialize() {
   setTimeout(() => {
     checkAndShowWarningBanner();
   }, 2000);
+
+  // Check for updates
+  checkForUpdate();
 }
 
 /**
@@ -242,7 +259,7 @@ function isTabMode() {
 function handleRefreshClick() {
   const activeTab = localStorage.getItem('activeTab') || 'dashboard';
   
-  console.log(`[DEBUG] Refreshing tab: ${activeTab}`);
+
   
   switch (activeTab) {
     case 'dashboard':
@@ -261,7 +278,7 @@ function handleRefreshClick() {
       loadAssignedTasks(true);
       break;
     default:
-      console.warn(`[WARN] No refresh handler for tab: ${activeTab}`);
+
   }
 }
 
@@ -433,7 +450,7 @@ function formatDate(date) {
  * Fetch worklogs from Jira API
  */
 async function fetchWorklogs(startDate, endDate) {
-  console.log(`[DEBUG] Fetching worklogs for date range: ${startDate} to ${endDate}`);
+
   return await window.JiraAPI.fetchWorklogs(startDate, endDate);
 }
 
@@ -660,8 +677,7 @@ async function handleIssueClick(event) {
     const issueUrl = `${jiraBaseUrl}/browse/${issueKey}`;
     const active = event.button !== 1 && !(event.ctrlKey || event.metaKey);
     chrome.tabs.create({ url: issueUrl, active });
-  } catch (error) {
-    console.error('Error opening issue:', error);
+    } catch (error) {
     showError(error.message === 'Open Jira in a tab before using this extension' 
       ? 'Cannot open issue: Jira tab not found' 
       : 'Failed to open issue');
@@ -1899,9 +1915,54 @@ async function checkAndShowWarningBanner() {
       // Target met, hide banner
       if (timesheetWarningBanner) timesheetWarningBanner.classList.add('hidden');
     }
-  } catch (error) {
-    console.error('Error checking warning banner:', error);
+    } catch (error) {
   }
+}
+
+async function checkForUpdate() {
+  try {
+    const response = await fetch(GITHUB_API_URL, {
+      headers: { 'Accept': 'application/vnd.github.v3+json' }
+    });
+    
+    if (!response.ok) return;
+    
+    const data = await response.json();
+    
+    if (data.message) return;
+    
+    const remoteVersion = data.tag_name?.replace(/^v/, '') || data.name;
+    
+    // Get local version from manifest
+    const manifest = chrome.runtime.getManifest();
+    const localVersion = manifest.version;
+    
+    // Compare versions
+    if (remoteVersion && localVersion && remoteVersion !== localVersion) {
+      // Check if update was already dismissed
+      const dismissedVersion = localStorage.getItem('updateDismissedVersion');
+      if (dismissedVersion === remoteVersion) return;
+      
+      if (remoteVersionSpan) remoteVersionSpan.textContent = remoteVersion;
+      if (localVersionSpan) localVersionSpan.textContent = localVersion;
+      updateBanner.classList.remove('hidden');
+    }
+  } catch (error) {
+    // Silent fail - no release yet or network error
+  }
+}
+
+function handleUpdateClick() {
+  const repoUrl = `https://github.com/${GITHUB_REPO}`;
+  chrome.tabs.create({ url: repoUrl });
+}
+
+function dismissUpdateBanner() {
+  const remoteVersion = remoteVersionSpan?.textContent;
+  if (remoteVersion) {
+    localStorage.setItem('updateDismissedVersion', remoteVersion);
+  }
+  updateBanner.classList.add('hidden');
 }
 
 // Initialize application

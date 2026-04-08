@@ -11,7 +11,8 @@
     "notifications"
   ],
   "host_permissions": [
-    "https://*.atlassian.net/*"
+    "https://*.atlassian.net/*",
+    "https://api.github.com/*"
   ],
   "action": {
     "default_popup": "popup.html",

@@ -320,7 +320,6 @@ const JiraAPI = {
       
       return { totalSeconds, formatted };
     } catch (error) {
-      console.error('Failed to fetch today\'s total:', error);
       return null;
     }
   }
