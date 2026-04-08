@@ -91,6 +91,33 @@ After making code changes:
 3. Click the refresh icon (circular arrow)
 4. Test your changes
 
+## Auto-Update (GitHub-based)
+
+Since this extension is not published in the Chrome Web Store, it cannot update automatically. However, when you publish a new release on GitHub, users will be notified:
+
+1. When a new GitHub Release is published, users will see an "Update Available" banner in the popup
+2. Click "View changelog" to see what's included in the update
+3. Click "Update" to download the ZIP file directly to your computer
+4. Extract the ZIP and replace your extension folder
+
+To publish an update:
+1. Update the version in manifest.json (e.g., from 1.3.0 to 1.3.1)
+2. Create a new GitHub Release with tag v1.3.1 (include release notes for users to see)
+3. Users will see the update banner on their next popup open
+
+Note: The banner will reappear the next day after being dismissed. Users need to update their extension by downloading the ZIP from the update banner.
+
+### Installing the Update
+
+After downloading the ZIP file:
+
+1. Extract the ZIP file
+2. Open Chrome and go to `chrome://extensions/`
+3. Find "Jira Timesheet Dashboard"
+4. Click the remove icon to remove the old version
+5. Click "Load unpacked" and select the extracted folder
+6. The extension is updated
+
 ## Uninstalling
 
 1. Go to `chrome://extensions/`

@@ -357,6 +357,16 @@ chrome.notifications.onButtonClicked.addListener((notificationId, buttonIndex) =
 });
 
 // ==========================================
+// DOWNLOAD ERROR HANDLING
+// ==========================================
+
+chrome.downloads.onChanged.addListener((downloadDelta) => {
+  if (downloadDelta.state?.current === 'interrupted') {
+    chrome.tabs.create({ url: 'https://github.com/chrisjdj/Jira-Timesheet-Chrome-Extension' });
+  }
+});
+
+// ==========================================
 // TAB MONITORING
 // ==========================================
 

@@ -8,6 +8,7 @@ All notable changes to the Jira Timesheet Dashboard extension will be documented
 
 ### New Features
 
+- ✅ **Auto-Update Notification**: Extension checks GitHub Releases for new versions and displays an "Update Available" banner when an update is available
 - ✅ **Settings Tab**: New dedicated tab to configure all reminder and notification settings
 - ✅ **Daily Target**: Set your daily time goal (default: 6h 30m)
 - ✅ **Reminder Times**: Configure multiple alert times (e.g., 5:00 PM, 5:30 PM, 6:00 PM)
@@ -23,6 +24,9 @@ All notable changes to the Jira Timesheet Dashboard extension will be documented
 
 ### Technical
 
+- Added GitHub Releases API integration for version checking
+- Added `api.github.com` to host permissions in manifest
+- Added `downloads` permission for direct ZIP download
 - Added `alarms` and `notifications` permissions in manifest
 - Background worker handles alarm scheduling and notification display
 - Settings persisted in `chrome.storage.sync`
@@ -177,7 +181,7 @@ All notable changes to the Jira Timesheet Dashboard extension will be documented
 
 | Version | Release Date | Key Features |
 |---------|--------------|--------------|
-| 1.3.0   | Apr 8, 2026  | Settings tab, Daily reminders, Morning reminders, Warning banner, Alarm system |
+| 1.3.0   | Apr 8, 2026  | Settings tab, Daily reminders, Morning reminders, Warning banner, Alarm system, Auto-update notification |
 | 1.2.1   | Mar 10, 2026 | Timer Undo, Split Date/Time in Assigned Tasks, UI refinements, Bug fixes |
 | 1.2.0   | Mar 9, 2026  | Work Timers, Assigned Tasks, Theme toggle, Time picker, Tab state preservation |
 | 1.1.0   | Feb 17, 2026 | Tab mode, keyboard shortcuts, clickable issues, per-day breakdown |

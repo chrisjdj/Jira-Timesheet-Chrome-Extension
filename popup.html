@@ -29,12 +29,15 @@
 
     <div id="dashboard" class="tab-content active">
       <div id="updateBanner" class="update-banner hidden">
-      <div class="update-banner-content">
+      <div class="update-banner-header">
         <div class="update-banner-title">🔄 Update Available</div>
-        <div class="update-banner-message">Version <span id="remoteVersion"></span> is available. You're on <span id="localVersion"></span>.</div>
+        <div class="update-banner-message">Version <span id="remoteVersion"></span> is available. You're on <span id="localVersion"></span>. <button id="viewReleaseNotesBtn" class="view-release-notes-btn hidden">View changelog</button></div>
       </div>
-      <button id="updateBtn" class="update-btn">Update</button>
-      <button id="dismissUpdateBtn" class="update-dismiss-btn" title="Dismiss">&times;</button>
+      <div class="update-banner-actions">
+        <button id="updateBtn" class="update-btn">Download Update</button>
+        <button id="dismissUpdateBtn" class="update-dismiss-btn" title="Dismiss">&times;</button>
+      </div>
+      <div id="updateReleaseNotes" class="update-release-notes hidden"></div>
     </div>
 
     <div id="timesheetWarningBanner" class="warning-banner hidden">

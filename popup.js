@@ -56,11 +56,32 @@ const refreshBtn = document.getElementById('refreshBtn');
 const updateBanner = document.getElementById('updateBanner');
 const remoteVersionSpan = document.getElementById('remoteVersion');
 const localVersionSpan = document.getElementById('localVersion');
+const updateReleaseNotes = document.getElementById('updateReleaseNotes');
+const viewReleaseNotesBtn = document.getElementById('viewReleaseNotesBtn');
 const updateBtn = document.getElementById('updateBtn');
 const dismissUpdateBtn = document.getElementById('dismissUpdateBtn');
 
 const GITHUB_REPO = 'chrisjdj/Jira-Timesheet-Chrome-Extension';
 const GITHUB_API_URL = `https://api.github.com/repos/${GITHUB_REPO}/releases/latest`;
+
+let latestDownloadUrl = null;
+
+function parseMarkdown(text) {
+  if (!text) return '';
+  
+  let html = text
+    .replace(/^### (.+)$/gm, '<h3>$1</h3>')
+    .replace(/^## (.+)$/gm, '<h2>$1</h2>')
+    .replace(/^# (.+)$/gm, '<h1>$1</h1>')
+    .replace(/\*\*(.+?)\*\*/g, '<strong>$1</strong>')
+    .replace(/`(.+?)`/g, '<code>$1</code>')
+    .replace(/^- (.+)$/gm, '<li>$1</li>')
+    .replace(/(<li>.*<\/li>\n?)+/g, '<ul>$&</ul>')
+    .replace(/\n\n/g, '</p><p>')
+    .replace(/\n/g, '<br>');
+  
+  return `<p>${html}</p>`;
+}
 
 // Shared State
 let cachedAssignedTasks = null;
@@ -99,6 +120,7 @@ if (refreshBtn) refreshBtn.addEventListener('click', handleRefreshClick);
 // Update Banner Listeners
 if (updateBtn) updateBtn.addEventListener('click', handleUpdateClick);
 if (dismissUpdateBtn) dismissUpdateBtn.addEventListener('click', dismissUpdateBanner);
+if (viewReleaseNotesBtn) viewReleaseNotesBtn.addEventListener('click', toggleReleaseNotes);
 
 // Settings Listener
 const settingsBtn = document.getElementById('settingsBtn');
@@ -1920,6 +1942,11 @@ async function checkAndShowWarningBanner() {
 }
 
 async function checkForUpdate() {
+  // Check if dismissed today
+  const dismissedDate = localStorage.getItem('updateDismissedDate');
+  const today = new Date().toDateString();
+  if (dismissedDate === today) return;
+
   try {
     const response = await fetch(GITHUB_API_URL, {
       headers: { 'Accept': 'application/vnd.github.v3+json' }
@@ -1932,6 +1959,8 @@ async function checkForUpdate() {
     if (data.message) return;
     
     const remoteVersion = data.tag_name?.replace(/^v/, '') || data.name;
+    const releaseNotes = data.body || '';
+    latestDownloadUrl = `https://github.com/${GITHUB_REPO}/archive/refs/tags/v${remoteVersion}.zip`;
     
     // Get local version from manifest
     const manifest = chrome.runtime.getManifest();
@@ -1939,12 +1968,17 @@ async function checkForUpdate() {
     
     // Compare versions
     if (remoteVersion && localVersion && remoteVersion !== localVersion) {
-      // Check if update was already dismissed
-      const dismissedVersion = localStorage.getItem('updateDismissedVersion');
-      if (dismissedVersion === remoteVersion) return;
-      
       if (remoteVersionSpan) remoteVersionSpan.textContent = remoteVersion;
       if (localVersionSpan) localVersionSpan.textContent = localVersion;
+      
+      // Show release notes (full content)
+      if (updateReleaseNotes && releaseNotes) {
+        updateReleaseNotes.innerHTML = parseMarkdown(releaseNotes);
+        if (viewReleaseNotesBtn) viewReleaseNotesBtn.classList.remove('hidden');
+      } else if (updateReleaseNotes) {
+        if (viewReleaseNotesBtn) viewReleaseNotesBtn.classList.add('hidden');
+      }
+      
       updateBanner.classList.remove('hidden');
     }
   } catch (error) {
@@ -1953,16 +1987,30 @@ async function checkForUpdate() {
 }
 
 function handleUpdateClick() {
-  const repoUrl = `https://github.com/${GITHUB_REPO}`;
-  chrome.tabs.create({ url: repoUrl });
+  if (latestDownloadUrl) {
+    const version = latestDownloadUrl.split('/').pop().replace('.zip', '');
+    chrome.downloads.download({
+      url: latestDownloadUrl,
+      filename: `Jira-Timesheet-Chrome-Extension-${version}.zip`
+    });
+  } else {
+    chrome.tabs.create({ url: `https://github.com/${GITHUB_REPO}` });
+  }
 }
 
 function dismissUpdateBanner() {
-  const remoteVersion = remoteVersionSpan?.textContent;
-  if (remoteVersion) {
-    localStorage.setItem('updateDismissedVersion', remoteVersion);
-  }
+  const today = new Date().toDateString();
+  localStorage.setItem('updateDismissedDate', today);
   updateBanner.classList.add('hidden');
+}
+
+function toggleReleaseNotes() {
+  if (updateReleaseNotes) {
+    updateReleaseNotes.classList.toggle('hidden');
+    if (viewReleaseNotesBtn) {
+      viewReleaseNotesBtn.textContent = updateReleaseNotes.classList.contains('hidden') ? 'View changelog' : 'Hide changelog';
+    }
+  }
 }
 
 // Initialize application
